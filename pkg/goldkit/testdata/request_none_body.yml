@@ -1,0 +1,5 @@
+# Example request with body type none.
+request:
+  method: GET
+  path: /
+  bodyType: none

@@ -1,0 +1,7 @@
+# Example response with invalid header.
+response:
+  statusCode: 201
+  headers:
+    - Bad
+  bodyType: text
+  body:

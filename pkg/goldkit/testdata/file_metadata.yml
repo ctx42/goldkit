@@ -1,0 +1,11 @@
+# Golden file with some metadata.
+meta:
+  key1: val1
+  key2: 123
+  key3: 12.3
+  key4: 2000-01-02T03:04:05Z
+bodyType: text
+body: |
+  Line1
+  Line2
+  {{ .data }}

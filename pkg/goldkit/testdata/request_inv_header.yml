@@ -1,0 +1,11 @@
+# Example request with invalid header.
+request:
+  scheme: https
+  host: example.com
+  method: POST
+  path: /some/path
+  headers:
+    - 'Authorization'
+    - 'Content-Type: application/json'
+  bodyType: text
+  body: abc

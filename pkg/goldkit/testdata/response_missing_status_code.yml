@@ -1,0 +1,4 @@
+# Example response with missing statusCode field.
+response:
+  bodyType: text
+  body:

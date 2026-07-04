@@ -1,0 +1,4 @@
+# Custom body type.
+bodyType: custom
+body: |
+  abc

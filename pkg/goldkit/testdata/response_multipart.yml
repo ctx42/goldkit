@@ -1,0 +1,16 @@
+# Response with multipart body and files.
+response:
+  statusCode: 200
+  headers:
+    - 'X-Custom: value'
+  bodyType: multipart
+  body:
+    files:
+      - field: file1
+        name: file1.txt
+        path: content0.txt
+      - field: file2
+        name: file2.txt
+        path: content1.txt
+    values:
+      field1: [VALUE1]

@@ -1,0 +1,5 @@
+# Example minimal response.
+response:
+  statusCode: 201
+  bodyType: text
+  body:

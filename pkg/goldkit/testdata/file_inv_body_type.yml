@@ -1,0 +1,3 @@
+# example goldkit file with invalid bodyType field.
+bodyType: unsupported
+body:

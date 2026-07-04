@@ -1,0 +1,4 @@
+# Example goldkit file with JSON body.
+bodyType: json
+body: |
+    { "key1": "val1" }

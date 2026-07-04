@@ -1,0 +1,8 @@
+# Example request with unsupported body type.
+request:
+  scheme: http
+  host: example.com
+  method: POST
+  path: /some/path
+  bodyType: unsupported
+  body:

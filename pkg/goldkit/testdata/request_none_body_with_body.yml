@@ -1,0 +1,7 @@
+# Example invalid request with body type none but with data.
+request:
+  method: GET
+  path: /
+  bodyType: none
+  body: |
+    abc

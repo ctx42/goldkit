@@ -1,0 +1,4 @@
+# Example golden file with JSON body and templated value.
+bodyType: json
+body: |
+    { "key1": "{{ .val }}" }

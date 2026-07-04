@@ -1,0 +1,7 @@
+# Example request with missing method field.
+request:
+  scheme: https
+  host: example.com
+  path: /some/path
+  bodyType: text
+  body: abc

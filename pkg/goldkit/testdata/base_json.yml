@@ -1,0 +1,4 @@
+# JSON body type.
+bodyType: json
+body: |- 
+  {"key2": "val2"}

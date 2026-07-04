@@ -1,0 +1,5 @@
+# Example response with invalid body type.
+response:
+  statusCode: 201
+  bodyType: unsupported
+  body:

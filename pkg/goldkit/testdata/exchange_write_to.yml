@@ -1,0 +1,30 @@
+request:
+    meta:
+        key1: val1
+        key2: 123
+        key3: 12.3
+        key4: 2000-01-02T03:04:05Z
+    bodyType: json
+    body: |
+        {
+          "key2": "val2"
+        }
+    scheme: http
+    host: example.com
+    method: POST
+    path: /some/path
+    query: key0=val0&key1=val1
+    headers:
+        - 'Authorization: Bearer token'
+response:
+    meta:
+        key1: val2
+        key2: 456
+        key3: 4.56
+        key4: 2001-01-02T03:04:05Z
+    bodyType: json
+    body: |
+        { "success": true }
+    statusCode: 200
+    headers:
+        - 'Content-Type: application/json'

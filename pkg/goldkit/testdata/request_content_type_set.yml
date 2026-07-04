@@ -1,0 +1,9 @@
+# Example request with "Content-Type" header set explicitly.
+request:
+  host: example.com
+  method: POST
+  path: /
+  headers:
+    - 'Content-Type: application/json'
+  bodyType: text
+  body: abc
