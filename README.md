@@ -1,6 +1,5 @@
 [![Go](https://github.com/ctx42/goldkit/actions/workflows/go.yml/badge.svg)](https://github.com/ctx42/goldkit/actions/workflows/go.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/ctx42/goldkit.svg)](https://pkg.go.dev/github.com/ctx42/goldkit)
-[![Go Report Card](https://goreportcard.com/badge/github.com/ctx42/goldkit)](https://goreportcard.com/report/github.com/ctx42/goldkit)
 
 # goldkit
 
