@@ -325,12 +325,12 @@ func Test_Exchange_Assert(t *testing.T) {
 
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		wMsg := "Post \"http://localhost:%d/some/path?key0=val0&key1=val1\": " +
+		wMsg := "Post \"http://127.0.0.1:%d/some/path?key0=val0&key1=val1\": " +
 			"dial tcp 127.0.0.1:%d: connect: connection refused"
 		tspy.ExpectLogEqual(wMsg, port, port)
 		tspy.Close()
 
-		data := Meta{}.MetaSet("host", "localhost:"+strconv.Itoa(port))
+		data := Meta{}.MetaSet("host", "127.0.0.1:"+strconv.Itoa(port))
 		src := must.Value(SourceFrom("testdata/exchange.yml", data))
 		gld := NewExchange(tspy, src)
 
@@ -339,7 +339,7 @@ func Test_Exchange_Assert(t *testing.T) {
 
 		// --- Then ---
 		assert.Equal(t, http.MethodPost, req.Method)
-		wantURL := "http://localhost:%d/some/path?key0=val0&key1=val1"
+		wantURL := "http://127.0.0.1:%d/some/path?key0=val0&key1=val1"
 		wantURL = fmt.Sprintf(wantURL, port)
 		assert.Equal(t, wantURL, req.URL.String())
 		wantHeadersMap := map[string][]string{
@@ -348,7 +348,7 @@ func Test_Exchange_Assert(t *testing.T) {
 		}
 		assert.MapSubset(t, wantHeadersMap, req.Header)
 		assert.JSON(t, `{"key2": "val2"}`, iokit.ReadAllStr(t, req.Body))
-		assert.Equal(t, "localhost:"+strconv.Itoa(port), req.Host)
+		assert.Equal(t, "127.0.0.1:"+strconv.Itoa(port), req.Host)
 
 		assert.Nil(t, res)
 	})
