@@ -1,3 +1,5 @@
+<img src="doc/goldkit-favicon-512.png" align="right" alt="goldkit logo" width="100">
+
 [![Go](https://github.com/ctx42/goldkit/actions/workflows/go.yml/badge.svg)](https://github.com/ctx42/goldkit/actions/workflows/go.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/ctx42/goldkit.svg)](https://pkg.go.dev/github.com/ctx42/goldkit)
 
