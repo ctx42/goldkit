@@ -36,11 +36,8 @@ func Test_NewRequest(t *testing.T) {
 			"Authorization: Bearer token",
 		}
 		assert.Equal(t, wantHeadersSlice, gld.Headers)
-		wantHeadersMap := map[string][]string{
-			"Authorization": {"Bearer token"},
-			"Content-Type":  {"text/plain"},
-		}
-		assert.MapSubset(t, wantHeadersMap, gld.headers)
+		wantHeadersMap := http.Header{"Authorization": {"Bearer token"}}
+		assert.Equal(t, wantHeadersMap, gld.headers)
 		wantMeta := map[string]any{
 			"key1": "val1",
 			"key2": 123,
@@ -55,7 +52,7 @@ func Test_NewRequest(t *testing.T) {
 	t.Run("content type header set explicitly", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
-		tspy.ExpectLogContain("INFO: Content-Type header overwritten")
+		tspy.ExpectLogContain("INFO: Content-Type header set explicitly")
 		tspy.Close()
 
 		src := must.Value(SourceFrom("testdata/request_content_type_set.yml", nil))
@@ -96,8 +93,7 @@ func Test_NewRequest(t *testing.T) {
 		assert.Equal(t, "", gld.Query)
 		assert.Equal(t, "GET /", gld.Pattern)
 		assert.Len(t, 0, gld.Headers)
-		wantHeadersMap := http.Header{"Content-Type": {"text/plain"}}
-		assert.Equal(t, wantHeadersMap, gld.headers)
+		assert.Len(t, 0, gld.headers)
 		assert.Len(t, 0, gld.Meta)
 		assert.Equal(t, Text, gld.BodyType)
 		assert.Equal(t, "", string(gld.Body()))
@@ -324,6 +320,40 @@ func Test_Request_Request(t *testing.T) {
 		assert.Len(t, 1, req.Header.Values("Content-Type"))
 		assert.Equal(t, "Bearer token", req.Header.Values("Authorization")[0])
 		assert.Equal(t, "text/plain", req.Header.Values("Content-Type")[0])
+	})
+
+	t.Run("explicit Content-Type", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectLogContain("INFO: Content-Type header set explicitly")
+		tspy.Close()
+
+		pth := "testdata/request_content_type_set.yml"
+		gld := NewRequest(tspy, must.Value(SourceFrom(pth, nil)))
+
+		// --- When ---
+		have := gld.Request()
+
+		// --- Then ---
+		want := []string{"application/json"}
+		assert.Equal(t, want, have.Header.Values("Content-Type"))
+	})
+
+	t.Run("error - invalid method", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogEqual("net/http: invalid method \"GE T\"")
+		tspy.Close()
+
+		rdr := strings.NewReader("request:\n  method: GE T\n  path: /\n")
+		gld := NewRequest(tspy, NewSource("/dir/file.yml", rdr))
+
+		// --- When ---
+		have := gld.Request()
+
+		// --- Then ---
+		assert.Nil(t, have)
 	})
 }
 
@@ -578,6 +608,23 @@ func Test_Request_Assert(t *testing.T) {
 		// --- Then ---
 		assert.True(t, have)
 		assert.Equal(t, http.NoBody, req.Body)
+	})
+
+	t.Run("derived Content-Type is not asserted", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.Close()
+
+		src := must.Value(SourceFrom("testdata/request_minimal.yml", nil))
+		gld := NewRequest(tspy, src)
+
+		req := httptest.NewRequest(http.MethodGet, "http://localhost/", nil)
+
+		// --- When ---
+		have := gld.Assert(req)
+
+		// --- Then ---
+		assert.True(t, have)
 	})
 
 	t.Run("body does not match", func(t *testing.T) {

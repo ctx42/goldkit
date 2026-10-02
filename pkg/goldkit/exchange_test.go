@@ -47,11 +47,8 @@ func Test_NewExchange(t *testing.T) {
 			"Authorization: Bearer token",
 		}
 		assert.Equal(t, wantHeadersSlice, req.Headers)
-		wantHeadersMap := map[string][]string{
-			"Authorization": {"Bearer token"},
-			"Content-Type":  {"application/json"},
-		}
-		assert.MapSubset(t, wantHeadersMap, req.headers)
+		wantHeadersMap := http.Header{"Authorization": {"Bearer token"}}
+		assert.Equal(t, wantHeadersMap, req.headers)
 		wantMeta := map[string]any{
 			"key1": "val1",
 			"key2": 123,
@@ -219,6 +216,27 @@ func Test_NewExchange(t *testing.T) {
 }
 
 func Test_Exchange_Assert(t *testing.T) {
+	t.Run("error - invalid request", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogEqual("net/http: invalid method \"GE T\"")
+		tspy.Close()
+
+		content := "" +
+			"request:\n  method: GE T\n  path: /\n" +
+			"response:\n  statusCode: 200\n"
+		src := NewSource("/dir/file.yml", strings.NewReader(content))
+		gld := NewExchange(tspy, src)
+
+		// --- When ---
+		req, res := gld.Assert() //nolint:bodyclose
+
+		// --- Then ---
+		assert.Nil(t, req)
+		assert.Nil(t, res)
+	})
+
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"maps"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 
 	"github.com/ctx42/testing/pkg/check"
@@ -35,8 +34,9 @@ type Request struct {
 // "request" which is used to set field values for the [Request] object. On
 // error, it marks the test as failed and returns nil.
 //
-// Based on bodyType the additional "Content-Type" header is always added
-// unless it was set explicitly.
+// Unless the golden file sets the "Content-Type" header explicitly,
+// [Request.Request] derives it from bodyType. [Request.Assert] checks only the
+// headers the golden file lists.
 //
 // Example YAML file:
 //
@@ -105,10 +105,16 @@ func (req *Request) Request() *http.Request {
 		RawQuery: req.Query,
 	}
 	body := bytes.NewReader(req.Body())
-	httpReq := httptest.NewRequest(req.Method, uri.String(), body)
+	httpReq, err := http.NewRequest(req.Method, uri.String(), body)
+	if err != nil {
+		req.t.Error(err)
+		return nil
+	}
 	httpReq.URL.RawQuery = req.Query
-	httpReq.RequestURI = ""
 	httpReq.Header = maps.Clone(req.headers)
+	if _, ok := httpReq.Header["Content-Type"]; !ok {
+		req.body.SetContentTypeHeader(httpReq.Header)
+	}
 	return httpReq
 }
 
@@ -196,11 +202,9 @@ func (req *Request) setup(pth string) error {
 	if err != nil {
 		return err
 	}
-	if _, ok := req.headers["Content-Type"]; !ok {
-		req.body.SetContentTypeHeader(req.headers)
-	} else {
+	if _, ok := req.headers["Content-Type"]; ok {
 		req.t.Helper()
-		msg := "INFO: Content-Type header overwritten by the golden file."
+		msg := "INFO: Content-Type header set explicitly by the golden file."
 		req.t.Log(msg)
 	}
 	return req.validate()

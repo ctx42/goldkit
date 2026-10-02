@@ -74,10 +74,14 @@ func NewExchange(t tester.T, src Source) *Exchange {
 
 // Assert makes the request described in the golden file to host and asserts
 // the response matches. It returns the constructed request and received
-// response in case further assertions need to be done.
+// response in case further assertions need to be done. When the request
+// cannot be built, it marks the test as failed and returns nil for both.
 func (ex *Exchange) Assert() (*http.Request, *http.Response) {
 	ex.t.Helper()
 	req := ex.Request.Request()
+	if req == nil {
+		return nil, nil
+	}
 
 	var reqBody []byte
 	reqBody, req.Body = cloneReader(ex.t, req.Body)
