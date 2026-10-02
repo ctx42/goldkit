@@ -72,8 +72,9 @@ func (mp *MultiPart) SetContentTypeHeader(h http.Header) {
 // multipart body based on the current state of the [MultiPart] instance.
 // Before generating the request, it calls Close method. The request's
 // Content-Type header is automatically set to the multipart form data content
-// type. The request's body is parsed as multipart form data with a maximum
-// size of 10 MB.
+// type. The request's body is parsed as multipart form data, keeping up to 10
+// MB in memory; larger file parts are stored in temporary files, which the
+// caller removes with [multipart.Form.RemoveAll].
 func (mp *MultiPart) Request(method, path string) (*http.Request, error) {
 	if err := mp.Close(); err != nil {
 		return nil, err

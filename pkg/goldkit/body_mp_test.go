@@ -7,6 +7,7 @@ import (
 
 	"github.com/ctx42/testing/pkg/assert"
 	"github.com/ctx42/testing/pkg/tester"
+	"github.com/ctx42/testkit/pkg/oskit"
 	"gopkg.in/yaml.v3"
 )
 
@@ -314,6 +315,30 @@ func Test_mpBody_Assert(t *testing.T) {
 
 		// --- Then ---
 		assert.True(t, have)
+	})
+
+	t.Run("removes multipart temp files", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.Close()
+
+		dir := t.TempDir()
+		tmp := oskit.MkdirAll(t, dir, "tmp")
+		t.Setenv("TMPDIR", tmp)
+
+		oskit.Create(t, make([]byte, 11<<20), dir, "big.bin")
+		bdy := newMpBody(dir)
+		bdy.Files = []*mpFile{{"file", "big.bin", "big.bin"}}
+		assert.NoError(t, bdy.parse())
+
+		body := bdy.Body()
+
+		// --- When ---
+		have := bdy.Assert(tspy, body)
+
+		// --- Then ---
+		assert.True(t, have)
+		assert.Len(t, 0, oskit.Readdirnames(t, tmp))
 	})
 
 	t.Run("field value does not match", func(t *testing.T) {

@@ -115,6 +115,7 @@ func (bdy *mpBody) assert(have []byte) error {
 	if err != nil {
 		return err
 	}
+	defer func() { _ = wantReq.MultipartForm.RemoveAll() }()
 	wantValMap := wantReq.MultipartForm.Value
 	wantFiles := wantReq.MultipartForm.File
 
@@ -127,6 +128,7 @@ func (bdy *mpBody) assert(have []byte) error {
 	if err = haveReq.ParseMultipartForm(10e6); err != nil {
 		return err
 	}
+	defer func() { _ = haveReq.MultipartForm.RemoveAll() }()
 	haveValMap := haveReq.MultipartForm.Value
 	haveFiles := haveReq.MultipartForm.File
 
