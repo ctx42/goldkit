@@ -55,7 +55,8 @@ func Test_NewRequest(t *testing.T) {
 		tspy.ExpectLogContain("INFO: Content-Type header set explicitly")
 		tspy.Close()
 
-		src := must.Value(SourceFrom("testdata/request_content_type_set.yml", nil))
+		pth := "testdata/request_content_type_set.yml"
+		src := must.Value(SourceFrom(pth, nil))
 
 		// --- When ---
 		gld := NewRequest(tspy, src)
@@ -169,17 +170,20 @@ func Test_NewRequest(t *testing.T) {
 			"\r\n" +
 			"VALUE1\r\n" +
 			"--{{boundary}}\r\n" +
-			"Content-Disposition: form-data; name=\"file1\"; filename=\"file1.txt\"\r\n" +
+			"Content-Disposition: form-data; name=\"file1\"; " +
+			"filename=\"file1.txt\"\r\n" +
 			"Content-Type: application/octet-stream\r\n" +
 			"\r\n" +
 			"abc\r\n" +
 			"--{{boundary}}\r\n" +
-			"Content-Disposition: form-data; name=\"file2\"; filename=\"file2.txt\"\r\n" +
+			"Content-Disposition: form-data; name=\"file2\"; " +
+			"filename=\"file2.txt\"\r\n" +
 			"Content-Type: application/octet-stream\r\n" +
 			"\r\n" +
 			"xyz\r\n" +
 			"--{{boundary}}--\r\n"
-		want = strings.ReplaceAll(want, "{{boundary}}", must.Value(findBoundary(body)))
+		boundary := must.Value(findBoundary(body))
+		want = strings.ReplaceAll(want, "{{boundary}}", boundary)
 		assert.Equal(t, want, string(body))
 	})
 
@@ -269,7 +273,8 @@ func Test_NewRequest(t *testing.T) {
 		tspy.ExpectLogContain("HTTP request method field is required")
 		tspy.Close()
 
-		src := must.Value(SourceFrom("testdata/request_missing_method.yml", nil))
+		pth := "testdata/request_missing_method.yml"
+		src := must.Value(SourceFrom(pth, nil))
 
 		// --- When ---
 		gld := NewRequest(tspy, src)
@@ -346,7 +351,12 @@ func Test_Request_Request(t *testing.T) {
 		tspy.ExpectLogEqual("net/http: invalid method \"GE T\"")
 		tspy.Close()
 
-		rdr := strings.NewReader("request:\n  method: GE T\n  path: /\n")
+		content := `
+request:
+  method: GE T
+  path: /
+`
+		rdr := strings.NewReader(content)
 		gld := NewRequest(tspy, NewSource("/dir/file.yml", rdr))
 
 		// --- When ---

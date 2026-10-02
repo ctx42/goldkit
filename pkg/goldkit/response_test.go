@@ -96,17 +96,20 @@ func Test_NewResponse(t *testing.T) {
 			"\r\n" +
 			"VALUE1\r\n" +
 			"--{{boundary}}\r\n" +
-			"Content-Disposition: form-data; name=\"file1\"; filename=\"file1.txt\"\r\n" +
+			"Content-Disposition: form-data; name=\"file1\"; " +
+			"filename=\"file1.txt\"\r\n" +
 			"Content-Type: application/octet-stream\r\n" +
 			"\r\n" +
 			"abc\r\n" +
 			"--{{boundary}}\r\n" +
-			"Content-Disposition: form-data; name=\"file2\"; filename=\"file2.txt\"\r\n" +
+			"Content-Disposition: form-data; name=\"file2\"; " +
+			"filename=\"file2.txt\"\r\n" +
 			"Content-Type: application/octet-stream\r\n" +
 			"\r\n" +
 			"xyz\r\n" +
 			"--{{boundary}}--\r\n"
-		want = strings.ReplaceAll(want, "{{boundary}}", must.Value(findBoundary(body)))
+		boundary := must.Value(findBoundary(body))
+		want = strings.ReplaceAll(want, "{{boundary}}", boundary)
 		assert.Equal(t, want, string(body))
 	})
 
@@ -164,7 +167,8 @@ func Test_NewResponse(t *testing.T) {
 		tspy.ExpectLogEqual("invalid body type: \"unsupported\"")
 		tspy.Close()
 
-		src := must.Value(SourceFrom("testdata/response_inv_body_type.yml", nil))
+		pth := "testdata/response_inv_body_type.yml"
+		src := must.Value(SourceFrom(pth, nil))
 
 		// --- When ---
 		gld := NewResponse(tspy, src)
@@ -196,7 +200,8 @@ func Test_NewResponse(t *testing.T) {
 		tspy.ExpectLogContain("HTTP response status code field is required")
 		tspy.Close()
 
-		src := must.Value(SourceFrom("testdata/response_missing_status_code.yml", nil))
+		pth := "testdata/response_missing_status_code.yml"
+		src := must.Value(SourceFrom(pth, nil))
 
 		// --- When ---
 		gld := NewResponse(tspy, src)
@@ -230,7 +235,7 @@ func Test_Response_Response(t *testing.T) {
 		assert.NoError(t, have.Body.Close())
 	})
 
-	t.Run("derives Content-Type from body type when not set", func(t *testing.T) {
+	t.Run("derived Content-Type", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.Close()

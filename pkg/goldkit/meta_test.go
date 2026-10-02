@@ -449,7 +449,11 @@ func Test_Meta_MetaGetTime_tabular(t *testing.T) {
 	}{
 		{"time", map[string]any{"key": tim}, tim},
 		{"string time", map[string]any{"key": "2000-01-02T03:04:05Z"}, tim},
-		{"zero time", map[string]any{"key": "0000-00-00T00:00:00"}, time.Time{}},
+		{
+			"zero time",
+			map[string]any{"key": "0000-00-00T00:00:00"},
+			time.Time{},
+		},
 	}
 
 	for _, tc := range tt {

@@ -241,7 +241,11 @@ func (met Meta) MetaGetTime(key string) (time.Time, error) {
 //
 // The special case of "0000-00-00T00:00:00" is also handled for which the
 // zero-value time is returned and nil error.
-func (met Meta) MetaGetTimeIn(key string, tz *time.Location) (time.Time, error) {
+func (met Meta) MetaGetTimeIn(
+	key string,
+	tz *time.Location,
+) (time.Time, error) {
+
 	if tz == nil {
 		return time.Time{}, fmt.Errorf("%w: %#q: nil location", ErrValue, key)
 	}

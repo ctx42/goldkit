@@ -223,9 +223,13 @@ func Test_Exchange_Assert(t *testing.T) {
 		tspy.ExpectLogEqual("net/http: invalid method \"GE T\"")
 		tspy.Close()
 
-		content := "" +
-			"request:\n  method: GE T\n  path: /\n" +
-			"response:\n  statusCode: 200\n"
+		content := `
+request:
+  method: GE T
+  path: /
+response:
+  statusCode: 200
+`
 		src := NewSource("/dir/file.yml", strings.NewReader(content))
 		gld := NewExchange(tspy, src)
 
@@ -323,7 +327,7 @@ func Test_Exchange_Assert(t *testing.T) {
 		assert.NoError(t, res.Body.Close())
 	})
 
-	t.Run("status code mismatch keeps body readable", func(t *testing.T) {
+	t.Run("status mismatch body readable", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -339,7 +343,7 @@ func Test_Exchange_Assert(t *testing.T) {
 		gld := NewExchange(tspy, src)
 
 		// --- When ---
-		_, res := gld.Assert()
+		_, res := gld.Assert() //nolint:bodyclose
 
 		// --- Then ---
 		assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
@@ -395,7 +399,7 @@ func Test_Exchange_Assert(t *testing.T) {
 		gld := NewExchange(tspy, src)
 
 		// --- When ---
-		_, res := gld.Assert()
+		_, res := gld.Assert() //nolint:bodyclose
 
 		// --- Then ---
 		assert.Equal(t, http.NoBody, res.Body)

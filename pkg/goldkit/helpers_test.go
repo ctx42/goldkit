@@ -108,12 +108,14 @@ body:
 			"\r\n" +
 			"VALUE1\r\n" +
 			"--{{boundary}}\r\n" +
-			"Content-Disposition: form-data; name=\"file0\"; filename=\"file0.txt\"\r\n" +
+			"Content-Disposition: form-data; name=\"file0\"; " +
+			"filename=\"file0.txt\"\r\n" +
 			"Content-Type: application/octet-stream\r\n" +
 			"\r\n" +
 			"abc\r\n" +
 			"--{{boundary}}\r\n" +
-			"Content-Disposition: form-data; name=\"file1\"; filename=\"file1.txt\"\r\n" +
+			"Content-Disposition: form-data; name=\"file1\"; " +
+			"filename=\"file1.txt\"\r\n" +
 			"Content-Type: application/octet-stream\r\n" +
 			"\r\n" +
 			"xyz\r\n" +

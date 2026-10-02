@@ -15,7 +15,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ErrInvBodyType represents an unsupported request body type error.
+// ErrInvBodyType represents an unsupported golden file body type error.
 var ErrInvBodyType = errors.New("invalid body type")
 
 // errNilReader is returned when a golden file [Source] has no reader, for

@@ -172,7 +172,8 @@ func Test_mpBody_parse(t *testing.T) {
 		// --- Then ---
 		assert.NoError(t, err)
 		want := "--boundary\r\n" +
-			"Content-Disposition: form-data; name=\"file1\"; filename=\"file1.txt\"\r\n" +
+			"Content-Disposition: form-data; name=\"file1\"; " +
+			"filename=\"file1.txt\"\r\n" +
 			"Content-Type: application/octet-stream\r\n" +
 			"\r\n" +
 			"abc\r\n" +
@@ -217,7 +218,8 @@ func Test_mpBody_parse(t *testing.T) {
 		// --- Then ---
 		assert.NoError(t, err)
 		want := "--boundary\r\n" +
-			"Content-Disposition: form-data; name=\"file\"; filename=\"bin.wav\"\r\n" +
+			"Content-Disposition: form-data; name=\"file\"; " +
+			"filename=\"bin.wav\"\r\n" +
 			"Content-Type: application/octet-stream\r\n" +
 			"\r\n" +
 			"RIFF\r\n" +
@@ -296,7 +298,8 @@ func Test_mpBody_Body(t *testing.T) {
 		"\r\n" +
 		"value\r\n" +
 		"--boundary\r\n" +
-		"Content-Disposition: form-data; name=\"file\"; filename=\"filename\"\r\n" +
+		"Content-Disposition: form-data; name=\"file\"; " +
+		"filename=\"filename\"\r\n" +
 		"Content-Type: application/octet-stream\r\n" +
 		"\r\n" +
 		"xyz\r\n" +
@@ -474,7 +477,10 @@ func Test_mpBody_Assert(t *testing.T) {
 
 		bdy1 := newMpBody("testdata")
 		bdy1.Files = []*mpFile{{"file", "filename", "content0.txt"}}
-		bdy1.Values = map[string][]string{"field": {"value"}, "other": {"value"}}
+		bdy1.Values = map[string][]string{
+			"field": {"value"},
+			"other": {"value"},
+		}
 		assert.NoError(t, bdy1.setBoundary("boundary1"))
 		assert.NoError(t, bdy1.parse())
 
@@ -715,7 +721,8 @@ func Test_mpBody_Assert(t *testing.T) {
 			"\r\n" +
 			"value\r\n" +
 			"--boundary0\r\n" +
-			"Content-Disposition: form-data; name=\"file\"; filename=\"content0.txt\"\r\n" +
+			"Content-Disposition: form-data; name=\"file\"; " +
+			"filename=\"content0.txt\"\r\n" +
 			"Content-Type: application/octet-stream\r\n" +
 			"\r\n" +
 			"aBC\r\n" +
@@ -751,7 +758,8 @@ func Test_mpBody_Assert(t *testing.T) {
 			"\r\n" +
 			"value\r\n" +
 			"--boundary0\r\n" +
-			"Content-Disposition: form-data; name=\"file\"; filename=\"content0.txt\"\r\n" +
+			"Content-Disposition: form-data; name=\"file\"; " +
+			"filename=\"content0.txt\"\r\n" +
 			"Content-Type: application/octet-stream\r\n" +
 			"\r\n" +
 			"abcd\r\n" +

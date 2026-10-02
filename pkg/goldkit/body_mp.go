@@ -132,7 +132,8 @@ func (bdy *mpBody) assert(have []byte) error {
 		return err
 	}
 	haveReq := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(have))
-	haveReq.Header.Set("Content-Type", "multipart/form-data; boundary="+boundary)
+	ctype := "multipart/form-data; boundary=" + boundary
+	haveReq.Header.Set("Content-Type", ctype)
 	if err = haveReq.ParseMultipartForm(10e6); err != nil {
 		return fmt.Errorf("parse multipart body: %w", err)
 	}
@@ -150,7 +151,8 @@ func (bdy *mpBody) assert(have []byte) error {
 	for _, fil := range bdy.Files {
 		haves := haveFiles[fil.Field]
 		if len(haves) == 0 {
-			return fmt.Errorf("file field %q: %w", fil.Field, http.ErrMissingFile)
+			const format = "file field %q: %w"
+			return fmt.Errorf(format, fil.Field, http.ErrMissingFile)
 		}
 		idx := next[fil.Field]
 		next[fil.Field]++

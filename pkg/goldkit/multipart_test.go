@@ -100,7 +100,8 @@ func Test_MultiPart_AddFile(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, mp.Close())
 		exp := "--abc\r\n" +
-			"Content-Disposition: form-data; name=\"name\"; filename=\"filename\"\r\n" +
+			"Content-Disposition: form-data; name=\"name\"; " +
+			"filename=\"filename\"\r\n" +
 			"Content-Type: application/octet-stream\r\n" +
 			"\r\n" +
 			"\x01\x02\x03\r\n" +
