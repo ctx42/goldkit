@@ -10,6 +10,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var _ io.WriterTo = (*Exchange)(nil)
+
 // defExchangeTimeout is the [http.Client] timeout used by [Exchange.Assert]
 // when [Exchange.Timeout] is left at its zero value.
 const defExchangeTimeout = 30 * time.Second

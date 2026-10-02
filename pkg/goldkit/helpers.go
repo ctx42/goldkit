@@ -95,7 +95,7 @@ func lines2Headers(lines ...string) (http.Header, error) {
 	return http.Header(hs), nil
 }
 
-// findBoundary is a really crud way of finding boundary in a multipart body.
+// findBoundary is a really crude way of finding boundary in a multipart body.
 func findBoundary(body []byte) (string, error) {
 	str, err := bytes.NewBuffer(body).ReadString('\n')
 	if err != nil {

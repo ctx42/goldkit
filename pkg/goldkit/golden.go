@@ -34,7 +34,7 @@ type Body interface {
 	// Body returns body as a byte slice. Every call should return a new slice.
 	Body() []byte
 
-	// Assert returns true when body equals to `have`, false otherwise.
+	// Assert returns true when body equals have, false otherwise.
 	Assert(t tester.T, have []byte) bool
 
 	// SetContentTypeHeader sets Content-Type header in the given map.

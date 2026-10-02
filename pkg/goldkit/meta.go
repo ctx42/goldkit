@@ -57,33 +57,33 @@ var _ metaContract = Meta(nil) // Never rename or re-sign [Meta] methods.
 // variable is present in the map collection, the value (which may be empty or
 // nil) is returned and the boolean is true. Otherwise, the returned value will
 // be nil and the boolean will be false.
-func (m Meta) MetaLookup(key string) (any, bool) {
-	val, ok := m[key]
+func (met Meta) MetaLookup(key string) (any, bool) {
+	val, ok := met[key]
 	return val, ok
 }
 
 // MetaGet returns the value of the map variable named by the key. If the
 // variable is not present in the map nil is returned.
-func (m Meta) MetaGet(key string) any { return m[key] }
+func (met Meta) MetaGet(key string) any { return met[key] }
 
 // MetaSet sets the value of the map named by the key and returns the receiver
 // for chaining. The receiver must be non-nil; like any write to a nil map,
 // calling MetaSet on a nil [Meta] panics.
-func (m Meta) MetaSet(key string, value any) Meta {
-	m[key] = value
-	return m
+func (met Meta) MetaSet(key string, value any) Meta {
+	met[key] = value
+	return met
 }
 
 // MetaDelete deletes the map entry identified by the key.
-func (m Meta) MetaDelete(key string) { delete(m, key) }
+func (met Meta) MetaDelete(key string) { delete(met, key) }
 
 // MetaMeta checks if the specified key exists in the map, and it is of
 // map[string]any or [Meta] type. If the key is missing, it returns nil, and
 // the error has [ErrMissing] in its chain. If the key exists but its value is
 // not of the expected type, it returns nil and error having [ErrType] in its
 // chain. Otherwise, it returns the [Meta] value of the key and a nil error.
-func (m Meta) MetaMeta(key string) (Meta, error) {
-	if val, ok := m[key]; ok {
+func (met Meta) MetaMeta(key string) (Meta, error) {
+	if val, ok := met[key]; ok {
 		if sub, ok := val.(map[string]any); ok {
 			return sub, nil
 		}
@@ -100,8 +100,8 @@ func (m Meta) MetaMeta(key string) (Meta, error) {
 // having [ErrMissing] in its chain. If the key exists but its value is not of
 // the expected type, it returns an empty string and error having [ErrType] in
 // its chain. Otherwise, it returns the string value of the key and a nil error.
-func (m Meta) MetaGetString(key string) (string, error) {
-	if val, ok := m[key]; ok {
+func (met Meta) MetaGetString(key string) (string, error) {
+	if val, ok := met[key]; ok {
 		if v, ok := val.(string); ok {
 			return v, nil
 		}
@@ -115,8 +115,8 @@ func (m Meta) MetaGetString(key string) (string, error) {
 // [ErrMissing] in its chain. If the key exists but its value is not of the
 // expected type, it returns false and error having [ErrType] in its chain.
 // Otherwise, it returns the boolean value of the key and a nil error.
-func (m Meta) MetaGetBool(key string) (bool, error) {
-	if val, ok := m[key]; ok {
+func (met Meta) MetaGetBool(key string) (bool, error) {
+	if val, ok := met[key]; ok {
 		if v, ok := val.(bool); ok {
 			return v, nil
 		}
@@ -130,8 +130,8 @@ func (m Meta) MetaGetBool(key string) (bool, error) {
 // its chain. If the key exists but its value is not of the expected type, it
 // returns 0 and error having [ErrType] in its chain. Otherwise, it returns the
 // int value of the key and a nil error.
-func (m Meta) MetaGetInt(key string) (int, error) {
-	if val, ok := m[key]; ok {
+func (met Meta) MetaGetInt(key string) (int, error) {
+	if val, ok := met[key]; ok {
 		if v, ok := val.(int); ok {
 			return v, nil
 		}
@@ -145,8 +145,8 @@ func (m Meta) MetaGetInt(key string) (int, error) {
 // 0, and the error has [ErrMissing] in its chain. If the key exists but its
 // value is not of expected types, it returns 0 and error having [ErrType] in
 // its chain. Otherwise, it returns the int64 value of the key and a nil error.
-func (m Meta) MetaGetInt64(key string) (int64, error) {
-	if val, ok := m[key]; ok {
+func (met Meta) MetaGetInt64(key string) (int64, error) {
+	if val, ok := met[key]; ok {
 		switch v := val.(type) {
 		case int:
 			return int64(v), nil
@@ -170,8 +170,8 @@ func (m Meta) MetaGetInt64(key string) (int64, error) {
 // key exists but its value is not of expected types, it returns 0.0 and error
 // having [ErrType] in its chain. Otherwise, it returns the float64 value of
 // the key and a nil error.
-func (m Meta) MetaGetFloat64(key string) (float64, error) {
-	if val, ok := m[key]; ok {
+func (met Meta) MetaGetFloat64(key string) (float64, error) {
+	if val, ok := met[key]; ok {
 		switch v := val.(type) {
 		case int:
 			return float64(v), nil
@@ -205,8 +205,8 @@ func (m Meta) MetaGetFloat64(key string) (float64, error) {
 //
 // The special case of "0000-00-00T00:00:00" is also handled for which the
 // zero-value time is returned and nil error.
-func (m Meta) MetaGetTime(key string) (time.Time, error) {
-	if val, ok := m[key]; ok {
+func (met Meta) MetaGetTime(key string) (time.Time, error) {
+	if val, ok := met[key]; ok {
 		switch v := val.(type) {
 		case time.Time:
 			return v, nil
@@ -238,8 +238,8 @@ func (m Meta) MetaGetTime(key string) (time.Time, error) {
 //
 // The special case of "0000-00-00T00:00:00" is also handled for which the
 // zero-value time is returned and nil error.
-func (m Meta) MetaGetTimeIn(key string, tz *time.Location) (time.Time, error) {
-	if val, ok := m[key]; ok {
+func (met Meta) MetaGetTimeIn(key string, tz *time.Location) (time.Time, error) {
+	if val, ok := met[key]; ok {
 		switch v := val.(type) {
 		case time.Time:
 			return v, nil
@@ -272,8 +272,8 @@ func (m Meta) MetaGetTimeIn(key string, tz *time.Location) (time.Time, error) {
 // its chain. If the key is a string, but it is not a timezone name, it returns
 // nil and an error having [ErrFormat] in its chain. Otherwise, it returns the
 // [time.Location] value of the key and a nil error.
-func (m Meta) MetaGetLoc(key string) (*time.Location, error) {
-	if val, ok := m[key]; ok {
+func (met Meta) MetaGetLoc(key string) (*time.Location, error) {
+	if val, ok := met[key]; ok {
 		switch v := val.(type) {
 		case *time.Location:
 			return v, nil

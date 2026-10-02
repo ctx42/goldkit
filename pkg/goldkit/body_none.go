@@ -8,6 +8,8 @@ import (
 	"github.com/ctx42/testing/pkg/tester"
 )
 
+var _ Body = bodyNone{}
+
 // bodyNone represents golden file's NONE body.
 type bodyNone struct{}
 

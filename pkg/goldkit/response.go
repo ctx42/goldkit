@@ -67,7 +67,7 @@ func NewResponse(t tester.T, src Source) *Response {
 		},
 	}
 
-	if err = yaml.Unmarshal(data, wrap); err != nil {
+	if err = yaml.Unmarshal(data, &wrap); err != nil {
 		t.Error(err)
 		return nil
 	}
@@ -82,7 +82,7 @@ func NewResponse(t tester.T, src Source) *Response {
 
 // Response returns a [http.Response] object based on [Response].
 func (rsp *Response) Response() *http.Response {
-	r := &http.Response{Header: make(http.Header)}
+	r := &http.Response{}
 	code := rsp.StatusCode
 	r.StatusCode = code
 	r.Status = fmt.Sprintf("%d %s", code, http.StatusText(code))
@@ -137,7 +137,7 @@ func (rsp *Response) Assert(have *http.Response) bool {
 func (rsp *Response) setup(pth string) error {
 	var err error
 
-	// Parse request body based on the body type field.
+	// Parse response body based on the body type field.
 	rsp.body, err = parseBody(pth, rsp.RawBody, rsp.BodyType)
 	if err != nil {
 		return err

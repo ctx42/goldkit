@@ -81,7 +81,7 @@ func NewRequest(t tester.T, src Source) *Request {
 		},
 	}
 
-	if err = yaml.Unmarshal(data, wrap); err != nil {
+	if err = yaml.Unmarshal(data, &wrap); err != nil {
 		t.Error(err)
 		return nil
 	}
@@ -123,7 +123,7 @@ func (req *Request) Body() []byte {
 // All headers defined in the golden file must match exactly, but the "have"
 // request may have more headers than defined in the golden file.
 //
-// To compare response bodies, a method best suited for body type is used. For
+// To compare request bodies, a method best suited for body type is used. For
 // example, when comparing JSON bodies, both byte slices don't have to be
 // identical, but they must represent the same data.
 func (req *Request) Assert(have *http.Request) bool {
@@ -174,9 +174,9 @@ func (req *Request) Assert(have *http.Request) bool {
 		return false
 	}
 
-	gotBody, rc := cloneReader(req.t, have.Body)
+	haveBody, rc := cloneReader(req.t, have.Body)
 	defer func() { have.Body = rc }()
-	return req.body.Assert(req.t, gotBody)
+	return req.body.Assert(req.t, haveBody)
 }
 
 // setup takes a path to the YAML golden file and sets up the [Request]. The

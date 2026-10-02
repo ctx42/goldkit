@@ -19,4 +19,4 @@ type base struct {
 }
 
 // M returns Meta field value.
-func (b *base) M() Meta { return b.Meta }
+func (bas *base) M() Meta { return bas.Meta }

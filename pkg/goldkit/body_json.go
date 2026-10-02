@@ -9,6 +9,8 @@ import (
 	"github.com/ctx42/testing/pkg/tester"
 )
 
+var _ Body = (*bodyJSON)(nil)
+
 // bodyJSON represents golden file's JSON body.
 type bodyJSON struct {
 	body []byte
@@ -19,9 +21,9 @@ func jsonBody(body []byte) *bodyJSON {
 	return &bodyJSON{body: body}
 }
 
-func (bdy *bodyJSON) Assert(t tester.T, got []byte) bool {
+func (bdy *bodyJSON) Assert(t tester.T, have []byte) bool {
 	t.Helper()
-	if err := check.JSON(string(bdy.body), string(got)); err != nil {
+	if err := check.JSON(string(bdy.body), string(have)); err != nil {
 		t.Error(notice.From(err, "JSON body"))
 		return false
 	}

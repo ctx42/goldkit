@@ -8,6 +8,8 @@ import (
 	"github.com/ctx42/testing/pkg/tester"
 )
 
+var _ Body = (*bodyText)(nil)
+
 // bodyText represents golden file's TEXT body.
 type bodyText struct {
 	body string

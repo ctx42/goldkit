@@ -15,6 +15,8 @@ import (
 	"github.com/ctx42/testing/pkg/tester"
 )
 
+var _ Body = (*mpBody)(nil)
+
 // mpFile describes a file which is part of HTTP multipart request / response.
 type mpFile struct {
 	Field string `yaml:"field"` // Field name.
@@ -158,10 +160,10 @@ func (bdy *mpBody) assert(have []byte) error {
 			return err
 		}
 		haveContent, err := io.ReadAll(haveFil)
+		_ = haveFil.Close()
 		if err != nil {
 			return err
 		}
-		_ = haveFil.Close()
 
 		wantLen := len(wantContent)
 		haveLen := len(haveContent)

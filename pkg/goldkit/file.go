@@ -8,6 +8,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var _ io.WriterTo = (*File)(nil)
+
 // File represents a golden file.
 type File struct {
 	*base `yaml:",inline"`
