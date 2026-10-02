@@ -110,7 +110,7 @@ func Test_NewResponse(t *testing.T) {
 		assert.Equal(t, want, string(body))
 	})
 
-	t.Run("error reading", func(t *testing.T) {
+	t.Run("error - reading", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -141,7 +141,7 @@ func Test_NewResponse(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("invalid YAML", func(t *testing.T) {
+	t.Run("error - invalid YAML", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -157,7 +157,7 @@ func Test_NewResponse(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("unsupported body type", func(t *testing.T) {
+	t.Run("error - unsupported body type", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -173,7 +173,7 @@ func Test_NewResponse(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("invalid header", func(t *testing.T) {
+	t.Run("error - invalid header", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -189,7 +189,7 @@ func Test_NewResponse(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("missing status code field", func(t *testing.T) {
+	t.Run("error - missing status code field", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -252,12 +252,13 @@ func Test_Response_Body(t *testing.T) {
 	tspy.Close()
 
 	src := must.Value(SourceFrom("testdata/response_full.yml", nil))
-
-	// --- When ---
 	gld := NewResponse(tspy, src)
 
+	// --- When ---
+	have := gld.Body()
+
 	// --- Then ---
-	assert.Equal(t, `{ "key2": "val2" }`+"\n", string(gld.Body()))
+	assert.Equal(t, `{ "key2": "val2" }`+"\n", string(have))
 }
 
 func Test_Response_Assert(t *testing.T) {
@@ -266,14 +267,14 @@ func Test_Response_Assert(t *testing.T) {
 		tspy := tester.New(t)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/response_full.yml", nil))
+		gld := NewResponse(tspy, src)
+
 		rsp := &http.Response{Header: make(http.Header)}
 		rsp.StatusCode = 200
 		rsp.Header.Add("Authorization", "Bearer token")
 		rsp.Header.Add("Content-Type", "application/json")
 		rsp.Body = io.NopCloser(strings.NewReader(`{"key2":"val2"}`))
-
-		src := must.Value(SourceFrom("testdata/response_full.yml", nil))
-		gld := NewResponse(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(rsp)
@@ -293,14 +294,14 @@ func Test_Response_Assert(t *testing.T) {
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/response_full.yml", nil))
+		gld := NewResponse(tspy, src)
+
 		rsp := &http.Response{Header: make(http.Header)}
 		rsp.StatusCode = 400
 		rsp.Header.Add("Authorization", "Bearer token")
 		rsp.Header.Add("Content-Type", "application/json")
 		rsp.Body = io.NopCloser(strings.NewReader(`{"key2":"val2"}`))
-
-		src := must.Value(SourceFrom("testdata/response_full.yml", nil))
-		gld := NewResponse(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(rsp)
@@ -321,14 +322,14 @@ func Test_Response_Assert(t *testing.T) {
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/response_full.yml", nil))
+		gld := NewResponse(tspy, src)
+
 		rsp := &http.Response{Header: make(http.Header)}
 		rsp.StatusCode = 200
 		rsp.Header.Add("Authorization", "Bearer token 2")
 		rsp.Header.Add("Content-Type", "application/json")
 		rsp.Body = io.NopCloser(strings.NewReader(`{"key2":"val2"}`))
-
-		src := must.Value(SourceFrom("testdata/response_full.yml", nil))
-		gld := NewResponse(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(rsp)
@@ -342,15 +343,15 @@ func Test_Response_Assert(t *testing.T) {
 		tspy := tester.New(t)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/response_full.yml", nil))
+		gld := NewResponse(tspy, src)
+
 		rsp := &http.Response{Header: make(http.Header)}
 		rsp.StatusCode = 200
 		rsp.Header.Add("Authorization", "Bearer token")
 		rsp.Header.Add("Content-Type", "application/json")
 		rsp.Header.Add("Custom-Header", "custom data")
 		rsp.Body = io.NopCloser(strings.NewReader(`{"key2":"val2"}`))
-
-		src := must.Value(SourceFrom("testdata/response_full.yml", nil))
-		gld := NewResponse(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(rsp)
@@ -391,15 +392,15 @@ func Test_Response_Assert(t *testing.T) {
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/response_full.yml", nil))
+		gld := NewResponse(tspy, src)
+
 		rsp := &http.Response{Header: make(http.Header)}
 		rsp.StatusCode = 200
 		rsp.Header.Add("Authorization", "Bearer token")
 		rsp.Header.Add("Content-Type", "application/json")
 		rsp.Header.Add("Custom-Header", "custom data")
 		rsp.Body = io.NopCloser(strings.NewReader(`{"key2":"val1"}`))
-
-		src := must.Value(SourceFrom("testdata/response_full.yml", nil))
-		gld := NewResponse(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(rsp)

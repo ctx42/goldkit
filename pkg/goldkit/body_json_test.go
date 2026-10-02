@@ -19,7 +19,7 @@ func Test_jsonBody(t *testing.T) {
 	assert.Equal(t, string(data), string(bdy.body))
 }
 
-func Test_jsonBody_Assert(t *testing.T) {
+func Test_bodyJSON_Assert(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
@@ -55,33 +55,33 @@ func Test_jsonBody_Assert(t *testing.T) {
 	})
 }
 
-func Test_jsonBody_Body(t *testing.T) {
+func Test_bodyJSON_Body(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		// --- Given ---
 		bdy := jsonBody([]byte(`{"key":"val"}`))
 
 		// --- When ---
-		got := bdy.Body()
+		have := bdy.Body()
 
 		// --- Then ---
-		assert.Equal(t, `{"key":"val"}`, string(got))
+		assert.Equal(t, `{"key":"val"}`, string(have))
 	})
 
 	t.Run("returns copy", func(t *testing.T) {
 		// --- Given ---
 		bdy := jsonBody([]byte(`{"key":"val"}`))
-		got := bdy.Body()
-		got[0] = '['
+		edited := bdy.Body()
+		edited[0] = '['
 
 		// --- When ---
-		got = bdy.Body()
+		have := bdy.Body()
 
 		// --- Then ---
-		assert.Equal(t, `{"key":"val"}`, string(got))
+		assert.Equal(t, `{"key":"val"}`, string(have))
 	})
 }
 
-func Test_jsonBody_SetContentTypeHeader(t *testing.T) {
+func Test_bodyJSON_SetContentTypeHeader(t *testing.T) {
 	// --- Given ---
 	bdy := jsonBody([]byte(`{"key":"val"}`))
 	h := http.Header{

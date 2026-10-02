@@ -32,7 +32,8 @@ func Test_MultiPart_SetBoundary(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, mp.AddField("filed", "value"))
 		assert.NoError(t, mp.Close())
-		want := "--abc\r\n" +
+		want := "" +
+			"--abc\r\n" +
 			"Content-Disposition: form-data; name=\"filed\"\r\n" +
 			"\r\n" +
 			"value\r\n" +
@@ -41,7 +42,7 @@ func Test_MultiPart_SetBoundary(t *testing.T) {
 		assert.Equal(t, "abc", mp.Boundary())
 	})
 
-	t.Run("invalid boundary", func(t *testing.T) {
+	t.Run("error - invalid boundary", func(t *testing.T) {
 		// --- Given ---
 		mp := NewMultipart()
 
@@ -72,7 +73,7 @@ func Test_MultiPart_AddField(t *testing.T) {
 		assert.Equal(t, exp, mp.body.String())
 	})
 
-	t.Run("adding when closed causes error", func(t *testing.T) {
+	t.Run("error - closed", func(t *testing.T) {
 		// --- Given ---
 		mp := NewMultipart()
 		assert.NoError(t, mp.Close())
@@ -107,7 +108,7 @@ func Test_MultiPart_AddFile(t *testing.T) {
 		assert.Equal(t, exp, mp.body.String())
 	})
 
-	t.Run("adding when closed causes error", func(t *testing.T) {
+	t.Run("error - closed", func(t *testing.T) {
 		// --- Given ---
 		mp := NewMultipart()
 		assert.NoError(t, mp.Close())
@@ -119,7 +120,7 @@ func Test_MultiPart_AddFile(t *testing.T) {
 		assert.ErrorIs(t, ErrMultipartClosed, err)
 	})
 
-	t.Run("copy error", func(t *testing.T) {
+	t.Run("error - copy", func(t *testing.T) {
 		// --- Given ---
 		rdr := iokit.ErrReader(strings.NewReader("abc"), 1)
 		mp := NewMultipart()
@@ -191,7 +192,8 @@ func Test_MultiPart_Request(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
-		want := "--abc\r\n" +
+		want := "" +
+			"--abc\r\n" +
 			"Content-Disposition: form-data; name=\"name\"\r\n" +
 			"\r\n" +
 			"value\r\n" +
@@ -199,7 +201,7 @@ func Test_MultiPart_Request(t *testing.T) {
 		assert.Equal(t, want, string(mp.Body()))
 	})
 
-	t.Run("empty body fails to parse", func(t *testing.T) {
+	t.Run("error - empty body", func(t *testing.T) {
 		// --- Given ---
 		mp := NewMultipart()
 
@@ -223,7 +225,8 @@ func Test_MultiPart_Body(t *testing.T) {
 		have := mp.Body()
 
 		// --- Then ---
-		want := "--boundary\r\n" +
+		want := "" +
+			"--boundary\r\n" +
 			"Content-Disposition: form-data; name=\"field\"\r\n" +
 			"\r\n" +
 			"value\r\n" +

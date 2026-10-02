@@ -187,7 +187,7 @@ func Test_NewRequest(t *testing.T) {
 		assert.Equal(t, want, string(body))
 	})
 
-	t.Run("error reading", func(t *testing.T) {
+	t.Run("error - reading", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -218,7 +218,7 @@ func Test_NewRequest(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("invalid YAML", func(t *testing.T) {
+	t.Run("error - invalid YAML", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -234,7 +234,7 @@ func Test_NewRequest(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("unsupported body type", func(t *testing.T) {
+	t.Run("error - unsupported body type", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -250,7 +250,7 @@ func Test_NewRequest(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("invalid header", func(t *testing.T) {
+	t.Run("error - invalid header", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -266,7 +266,7 @@ func Test_NewRequest(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("missing method field", func(t *testing.T) {
+	t.Run("error - missing method field", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -282,7 +282,7 @@ func Test_NewRequest(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("missing path field", func(t *testing.T) {
+	t.Run("error - missing path field", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -333,12 +333,13 @@ func Test_Request_Body(t *testing.T) {
 	tspy.Close()
 
 	src := must.Value(SourceFrom("testdata/request_full.yml", nil))
-
-	// --- When ---
 	gld := NewRequest(tspy, src)
 
+	// --- When ---
+	have := gld.Body()
+
 	// --- Then ---
-	assert.Equal(t, "abc\n", string(gld.Body()))
+	assert.Equal(t, "abc\n", string(have))
 }
 
 func Test_Request_Assert(t *testing.T) {
@@ -346,6 +347,9 @@ func Test_Request_Assert(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.Close()
+
+		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
+		gld := NewRequest(tspy, src)
 
 		req := httptest.NewRequest(
 			http.MethodPost,
@@ -355,9 +359,6 @@ func Test_Request_Assert(t *testing.T) {
 		req.Header.Add("Authorization", "Bearer token")
 		req.Header.Add("Content-Type", "text/plain")
 		req.URL.RawQuery = "key0=val0&key1=val1"
-
-		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
-		gld := NewRequest(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(req)
@@ -377,14 +378,14 @@ func Test_Request_Assert(t *testing.T) {
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
+		gld := NewRequest(tspy, src)
+
 		req := httptest.NewRequest(
 			http.MethodPost,
 			"http"+"://example.com/some/path",
 			http.NoBody,
 		)
-
-		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
-		gld := NewRequest(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(req)
@@ -404,14 +405,14 @@ func Test_Request_Assert(t *testing.T) {
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
+		gld := NewRequest(tspy, src)
+
 		req := httptest.NewRequest(
 			http.MethodPost,
 			"https://other.com/some/path",
 			http.NoBody,
 		)
-
-		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
-		gld := NewRequest(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(req)
@@ -431,14 +432,14 @@ func Test_Request_Assert(t *testing.T) {
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
+		gld := NewRequest(tspy, src)
+
 		req := httptest.NewRequest(
 			http.MethodGet,
 			"https://example.com/some/path",
 			http.NoBody,
 		)
-
-		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
-		gld := NewRequest(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(req)
@@ -458,14 +459,14 @@ func Test_Request_Assert(t *testing.T) {
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
+		gld := NewRequest(tspy, src)
+
 		req := httptest.NewRequest(
 			http.MethodPost,
 			"https://example.com/other/path",
 			http.NoBody,
 		)
-
-		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
-		gld := NewRequest(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(req)
@@ -485,15 +486,15 @@ func Test_Request_Assert(t *testing.T) {
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
+		gld := NewRequest(tspy, src)
+
 		req := httptest.NewRequest(
 			http.MethodPost,
 			"https://example.com/some/path",
 			http.NoBody,
 		)
 		req.URL.RawQuery = "key0=val0"
-
-		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
-		gld := NewRequest(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(req)
@@ -514,6 +515,9 @@ func Test_Request_Assert(t *testing.T) {
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
+		gld := NewRequest(tspy, src)
+
 		req := httptest.NewRequest(
 			http.MethodPost,
 			"https://example.com/some/path",
@@ -522,9 +526,6 @@ func Test_Request_Assert(t *testing.T) {
 		req.URL.RawQuery = "key0=val0&key1=val1"
 		req.Header.Add("Authorization", "Bearer token2")
 		req.Header.Add("Content-Type", "text/plain")
-
-		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
-		gld := NewRequest(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(req)
@@ -538,6 +539,9 @@ func Test_Request_Assert(t *testing.T) {
 		tspy := tester.New(t)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
+		gld := NewRequest(tspy, src)
+
 		reqBody := strings.NewReader("abc\n")
 		req := httptest.NewRequest(
 			http.MethodPost,
@@ -548,9 +552,6 @@ func Test_Request_Assert(t *testing.T) {
 		req.Header.Add("Authorization", "Bearer token")
 		req.Header.Add("Content-Type", "text/plain")
 		req.Header.Add("Custom-Header", "custom data")
-
-		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
-		gld := NewRequest(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(req)
@@ -595,6 +596,9 @@ func Test_Request_Assert(t *testing.T) {
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
+		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
+		gld := NewRequest(tspy, src)
+
 		req := httptest.NewRequest(
 			http.MethodPost,
 			"https://example.com/some/path",
@@ -603,9 +607,6 @@ func Test_Request_Assert(t *testing.T) {
 		req.Header.Add("Authorization", "Bearer token")
 		req.Header.Add("Content-Type", "text/plain")
 		req.URL.RawQuery = "key0=val0&key1=val1"
-
-		src := must.Value(SourceFrom("testdata/request_full.yml", nil))
-		gld := NewRequest(tspy, src)
 
 		// --- When ---
 		have := gld.Assert(req)

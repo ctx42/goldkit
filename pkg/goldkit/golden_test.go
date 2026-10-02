@@ -35,9 +35,8 @@ func Test_SourceFrom(t *testing.T) {
 		// --- Then ---
 		assert.NoError(t, err)
 		assert.Equal(t, pth, src.Path)
-		want := "meta:\n  key1: {{ .key1 }}\n"
 		have := iokit.ReadAllStr(t, src)
-		assert.Equal(t, want, have)
+		assert.Equal(t, "meta:\n  key1: {{ .key1 }}\n", have)
 	})
 
 	t.Run("with data", func(t *testing.T) {
@@ -53,9 +52,8 @@ func Test_SourceFrom(t *testing.T) {
 		// --- Then ---
 		assert.NoError(t, err)
 		assert.Equal(t, pth, src.Path)
-		want := "meta:\n  key1: value1\n"
 		have := iokit.ReadAllStr(t, src)
-		assert.Equal(t, want, have)
+		assert.Equal(t, "meta:\n  key1: value1\n", have)
 	})
 
 	t.Run("custom delim", func(t *testing.T) {
@@ -71,12 +69,11 @@ func Test_SourceFrom(t *testing.T) {
 		// --- Then ---
 		assert.NoError(t, err)
 		assert.Equal(t, pth, src.Path)
-		want := "meta:\n  key1: value1\n"
 		have := iokit.ReadAllStr(t, src)
-		assert.Equal(t, want, have)
+		assert.Equal(t, "meta:\n  key1: value1\n", have)
 	})
 
-	t.Run("not existing golden file", func(t *testing.T) {
+	t.Run("error - not existing golden file", func(t *testing.T) {
 		// --- When ---
 		src, err := SourceFrom("testdata/not_existing.yml", nil)
 
@@ -88,7 +85,7 @@ func Test_SourceFrom(t *testing.T) {
 		assert.Zero(t, src)
 	})
 
-	t.Run("invalid template", func(t *testing.T) {
+	t.Run("error - invalid template", func(t *testing.T) {
 		// --- Given ---
 		data := map[string]any{"key1": "value1"}
 
@@ -101,7 +98,7 @@ func Test_SourceFrom(t *testing.T) {
 		assert.Zero(t, src)
 	})
 
-	t.Run("invalid template data", func(t *testing.T) {
+	t.Run("error - invalid template data", func(t *testing.T) {
 		// --- Given ---
 		data := map[string]any{"key1": func() {}}
 
@@ -134,9 +131,8 @@ func Test_Open(t *testing.T) {
 
 		assert.Same(t, tspy, tm)
 		assert.Equal(t, pth, src.Path)
-		want := "meta:\n  key1: {{ .key1 }}\n"
 		have := iokit.ReadAllStr(t, src)
-		assert.Equal(t, want, have)
+		assert.Equal(t, "meta:\n  key1: {{ .key1 }}\n", have)
 	})
 
 	t.Run("with data", func(t *testing.T) {
@@ -157,9 +153,8 @@ func Test_Open(t *testing.T) {
 
 		assert.Same(t, tspy, tm)
 		assert.Equal(t, pth, src.Path)
-		want := "meta:\n  key1: value1\n"
 		have := iokit.ReadAllStr(t, src)
-		assert.Equal(t, want, have)
+		assert.Equal(t, "meta:\n  key1: value1\n", have)
 	})
 
 	t.Run("custom delim", func(t *testing.T) {
@@ -177,14 +172,14 @@ func Test_Open(t *testing.T) {
 
 		// --- Then ---
 		tspy.Finish()
+
 		assert.Same(t, tspy, tm)
 		assert.Equal(t, pth, src.Path)
 		have := iokit.ReadAllStr(t, src)
-		want := "meta:\n  key1: value1\n"
-		assert.Equal(t, want, have)
+		assert.Equal(t, "meta:\n  key1: value1\n", have)
 	})
 
-	t.Run("invalid template", func(t *testing.T) {
+	t.Run("error - invalid template", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -201,6 +196,7 @@ func Test_Open(t *testing.T) {
 
 		// --- Then ---
 		tspy.Finish()
+
 		assert.Same(t, tspy, tm)
 		assert.Zero(t, src)
 	})

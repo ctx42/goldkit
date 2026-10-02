@@ -141,7 +141,7 @@ func Test_Meta_MetaMeta(t *testing.T) {
 		assert.Equal(t, Meta(map[string]any{"A": 1}), have)
 	})
 
-	t.Run("not existing", func(t *testing.T) {
+	t.Run("error - not existing", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{}
 
@@ -154,7 +154,7 @@ func Test_Meta_MetaMeta(t *testing.T) {
 		assert.Nil(t, have)
 	})
 
-	t.Run("not map", func(t *testing.T) {
+	t.Run("error - not map", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"key": 1}
 
@@ -181,7 +181,7 @@ func Test_Meta_MetaGetString(t *testing.T) {
 		assert.Equal(t, "abc", have)
 	})
 
-	t.Run("not existing", func(t *testing.T) {
+	t.Run("error - not existing", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{}
 
@@ -194,7 +194,7 @@ func Test_Meta_MetaGetString(t *testing.T) {
 		assert.Empty(t, have)
 	})
 
-	t.Run("not string type", func(t *testing.T) {
+	t.Run("error - not string type", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"key": 1}
 
@@ -221,7 +221,7 @@ func Test_Meta_MetaGetBool(t *testing.T) {
 		assert.True(t, have)
 	})
 
-	t.Run("not existing", func(t *testing.T) {
+	t.Run("error - not existing", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{}
 
@@ -234,7 +234,7 @@ func Test_Meta_MetaGetBool(t *testing.T) {
 		assert.False(t, have)
 	})
 
-	t.Run("not bool type", func(t *testing.T) {
+	t.Run("error - not bool type", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"key": 1}
 
@@ -261,7 +261,7 @@ func Test_Meta_MetaGetInt(t *testing.T) {
 		assert.Equal(t, 1, have)
 	})
 
-	t.Run("not existing", func(t *testing.T) {
+	t.Run("error - not existing", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{}
 
@@ -274,7 +274,7 @@ func Test_Meta_MetaGetInt(t *testing.T) {
 		assert.Empty(t, have)
 	})
 
-	t.Run("not int type", func(t *testing.T) {
+	t.Run("error - not int type", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"key": "abc"}
 
@@ -289,7 +289,7 @@ func Test_Meta_MetaGetInt(t *testing.T) {
 }
 
 func Test_Meta_MetaGetInt64(t *testing.T) {
-	t.Run("not existing", func(t *testing.T) {
+	t.Run("error - not existing", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{}
 
@@ -302,7 +302,7 @@ func Test_Meta_MetaGetInt64(t *testing.T) {
 		assert.Empty(t, have)
 	})
 
-	t.Run("not int64 type", func(t *testing.T) {
+	t.Run("error - not int64 type", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"key": "abc"}
 
@@ -343,7 +343,7 @@ func Test_Meta_MetaGetInt64_tabular(t *testing.T) {
 }
 
 func Test_Meta_MetaGetFloat64(t *testing.T) {
-	t.Run("not existing", func(t *testing.T) {
+	t.Run("error - not existing", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{}
 
@@ -356,7 +356,7 @@ func Test_Meta_MetaGetFloat64(t *testing.T) {
 		assert.Empty(t, have)
 	})
 
-	t.Run("not float64 type", func(t *testing.T) {
+	t.Run("error - not float64 type", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"key": "abc"}
 
@@ -399,7 +399,7 @@ func Test_Meta_MetaGetFloat64_tabular(t *testing.T) {
 }
 
 func Test_Meta_MetaGetTime(t *testing.T) {
-	t.Run("not existing", func(t *testing.T) {
+	t.Run("error - not existing", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{}
 
@@ -412,7 +412,7 @@ func Test_Meta_MetaGetTime(t *testing.T) {
 		assert.Zero(t, have)
 	})
 
-	t.Run("not time or string type", func(t *testing.T) {
+	t.Run("error - not time or string type", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"key": 1}
 
@@ -425,7 +425,7 @@ func Test_Meta_MetaGetTime(t *testing.T) {
 		assert.Zero(t, have)
 	})
 
-	t.Run("parsing error", func(t *testing.T) {
+	t.Run("error - parsing", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"key": "abc"}
 
@@ -465,7 +465,7 @@ func Test_Meta_MetaGetTime_tabular(t *testing.T) {
 }
 
 func Test_Meta_MetaGetTimeIn(t *testing.T) {
-	t.Run("not existing", func(t *testing.T) {
+	t.Run("error - not existing", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{}
 
@@ -478,7 +478,7 @@ func Test_Meta_MetaGetTimeIn(t *testing.T) {
 		assert.Zero(t, have)
 	})
 
-	t.Run("not time or string type", func(t *testing.T) {
+	t.Run("error - not time or string type", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"key": 1}
 
@@ -491,7 +491,7 @@ func Test_Meta_MetaGetTimeIn(t *testing.T) {
 		assert.Zero(t, have)
 	})
 
-	t.Run("parsing error", func(t *testing.T) {
+	t.Run("error - parsing", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"key": "abc"}
 
@@ -568,7 +568,7 @@ func Test_Meta_MetaGetTimeIn_tabular(t *testing.T) {
 }
 
 func Test_Meta_MetaGetLoc(t *testing.T) {
-	t.Run("not existing", func(t *testing.T) {
+	t.Run("error - not existing", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{}
 
@@ -581,7 +581,7 @@ func Test_Meta_MetaGetLoc(t *testing.T) {
 		assert.Nil(t, have)
 	})
 
-	t.Run("not location or string type", func(t *testing.T) {
+	t.Run("error - not location or string type", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"key": 1}
 
@@ -594,7 +594,7 @@ func Test_Meta_MetaGetLoc(t *testing.T) {
 		assert.Nil(t, have)
 	})
 
-	t.Run("parsing error", func(t *testing.T) {
+	t.Run("error - parsing", func(t *testing.T) {
 		// --- Given ---
 		m := map[string]any{"key": "abc"}
 

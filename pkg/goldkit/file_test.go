@@ -52,7 +52,7 @@ func Test_New(t *testing.T) {
 		assert.Equal(t, wantMeta, gld.Meta)
 	})
 
-	t.Run("read error", func(t *testing.T) {
+	t.Run("error - read", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -83,7 +83,7 @@ func Test_New(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("invalid YAML file", func(t *testing.T) {
+	t.Run("error - invalid YAML", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -101,7 +101,7 @@ func Test_New(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("unsupported body type", func(t *testing.T) {
+	t.Run("error - unsupported body type", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -198,8 +198,7 @@ func Test_File_Body(t *testing.T) {
 	have := gld.Body()
 
 	// --- Then ---
-	want := []byte(`{ "key1": "val1" }`)
-	assert.Equal(t, want, have)
+	assert.Equal(t, []byte(`{ "key1": "val1" }`), have)
 }
 
 func Test_File_Reader(t *testing.T) {
@@ -214,9 +213,8 @@ func Test_File_Reader(t *testing.T) {
 	rdr := gld.Reader()
 
 	// --- Then ---
-	want := []byte(`{ "key1": "val1" }`)
 	have := iokit.ReadAll(t, rdr)
-	assert.Equal(t, want, have)
+	assert.Equal(t, []byte(`{ "key1": "val1" }`), have)
 }
 
 func Test_File_Assert(t *testing.T) {

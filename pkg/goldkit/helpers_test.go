@@ -30,9 +30,8 @@ func Test_parseBody(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
-
 		assert.SameType(t, &bodyJSON{}, bdy)
-		assert.SameType(t, `{}`, string(bdy.Body()))
+		assert.Equal(t, `{}`, string(bdy.Body()))
 	})
 
 	t.Run("text", func(t *testing.T) {
@@ -51,7 +50,6 @@ func Test_parseBody(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
-
 		assert.SameType(t, &bodyText{}, bdy)
 		assert.Equal(t, "abc\n", string(bdy.Body()))
 	})
@@ -72,7 +70,6 @@ func Test_parseBody(t *testing.T) {
 
 		// --- Then ---
 		assert.NoError(t, err)
-
 		assert.SameType(t, bodyNone{}, bdy)
 		assert.Nil(t, bdy.Body())
 	})
@@ -99,7 +96,6 @@ body:
 
 		// --- Then ---
 		assert.NoError(t, err)
-
 		assert.SameType(t, &mpBody{}, bdy)
 		body := bdy.Body()
 		want := "" +
@@ -131,7 +127,7 @@ body:
 		assert.Equal(t, want, string(body))
 	})
 
-	t.Run("multipart parse error", func(t *testing.T) {
+	t.Run("error - multipart parse", func(t *testing.T) {
 		// --- Given ---
 		content := []byte(`
 body:
@@ -150,7 +146,7 @@ body:
 		assert.Nil(t, bdy)
 	})
 
-	t.Run("multipart decode error", func(t *testing.T) {
+	t.Run("error - multipart decode", func(t *testing.T) {
 		// --- Given ---
 		node := yaml.Node{
 			Kind:   yaml.ScalarNode,
@@ -169,7 +165,7 @@ body:
 		assert.Nil(t, bdy)
 	})
 
-	t.Run("unknown", func(t *testing.T) {
+	t.Run("error - unknown body type", func(t *testing.T) {
 		// --- Given ---
 		node := yaml.Node{
 			Kind:   yaml.ScalarNode,
@@ -198,14 +194,14 @@ func Test_cloneReader(t *testing.T) {
 		rdr := io.NopCloser(strings.NewReader("some text"))
 
 		// --- When ---
-		buf, got := cloneReader(tspy, rdr)
+		buf, have := cloneReader(tspy, rdr)
 
 		// --- Then ---
 		assert.Equal(t, "some text", string(buf))
-		assert.Equal(t, "some text", iokit.ReadAllStr(t, got))
+		assert.Equal(t, "some text", iokit.ReadAllStr(t, have))
 	})
 
-	t.Run("reader error", func(t *testing.T) {
+	t.Run("error - reader", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -216,11 +212,11 @@ func Test_cloneReader(t *testing.T) {
 		rdr := io.NopCloser(r)
 
 		// --- When ---
-		buf, got := cloneReader(tspy, rdr)
+		buf, have := cloneReader(tspy, rdr)
 
 		// --- Then ---
 		assert.Nil(t, buf)
-		assert.Equal(t, http.NoBody, got)
+		assert.Equal(t, http.NoBody, have)
 	})
 
 	t.Run("nil reader", func(t *testing.T) {
@@ -270,7 +266,7 @@ func Test_lines2Headers(t *testing.T) {
 		assert.Len(t, 0, hs)
 	})
 
-	t.Run("error", func(t *testing.T) {
+	t.Run("error - missing colon", func(t *testing.T) {
 		// --- When ---
 		hs, err := lines2Headers("abc")
 
@@ -306,7 +302,7 @@ func Test_findBoundary(t *testing.T) {
 		assert.Equal(t, "-xyz", boundary)
 	})
 
-	t.Run("invalid", func(t *testing.T) {
+	t.Run("error - invalid", func(t *testing.T) {
 		// --- Given ---
 		body := []byte("abc\n")
 
@@ -318,7 +314,7 @@ func Test_findBoundary(t *testing.T) {
 		assert.Equal(t, "", boundary)
 	})
 
-	t.Run("error reading", func(t *testing.T) {
+	t.Run("error - reading", func(t *testing.T) {
 		// --- Given ---
 		body := []byte("")
 

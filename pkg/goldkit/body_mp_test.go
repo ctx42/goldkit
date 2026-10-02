@@ -14,16 +14,16 @@ import (
 func Test_mpFile_YAML_unmarshal(t *testing.T) {
 	// --- Given ---
 	data := []byte("field: file0\nname: file0.txt\npath: content0.txt")
+	fil := &mpFile{}
 
 	// --- When ---
-	have := &mpFile{}
-	err := yaml.Unmarshal(data, have)
+	err := yaml.Unmarshal(data, fil)
 
 	// --- Then ---
 	assert.NoError(t, err)
-	assert.Equal(t, "file0", have.Field)
-	assert.Equal(t, "file0.txt", have.Name)
-	assert.Equal(t, "content0.txt", have.Path)
+	assert.Equal(t, "file0", fil.Field)
+	assert.Equal(t, "file0.txt", fil.Name)
+	assert.Equal(t, "content0.txt", fil.Path)
 }
 
 func Test_mpBody_YAML_unmarshal(t *testing.T) {
@@ -41,9 +41,9 @@ func Test_mpBody_YAML_unmarshal(t *testing.T) {
           float: [1.1]
           str: [VALUE1]
           time: [2021-02-03T04:05:06Z]`)
+	bdy := &mpBody{}
 
 	// --- When ---
-	bdy := &mpBody{}
 	err := yaml.Unmarshal(data, bdy)
 
 	// --- Then ---
@@ -103,7 +103,7 @@ func Test_mpBody_boundary_setBoundary(t *testing.T) {
 }
 
 func Test_mpBody_setBoundary(t *testing.T) {
-	t.Run("invalid boundary", func(t *testing.T) {
+	t.Run("error - invalid boundary", func(t *testing.T) {
 		// --- Given ---
 		bdy := newMpBody("testdata")
 
@@ -225,7 +225,7 @@ func Test_mpBody_parse(t *testing.T) {
 		assert.Equal(t, want, string(bdy.Body()))
 	})
 
-	t.Run("not existing file", func(t *testing.T) {
+	t.Run("error - not existing file", func(t *testing.T) {
 		// --- Given ---
 		data := []byte(`
         files:
@@ -246,7 +246,7 @@ func Test_mpBody_parse(t *testing.T) {
 		assert.Equal(t, "open", e.Op)
 	})
 
-	t.Run("add file error", func(t *testing.T) {
+	t.Run("error - add file", func(t *testing.T) {
 		// --- Given ---
 		data := []byte(`
         files:

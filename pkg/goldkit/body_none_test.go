@@ -16,7 +16,7 @@ func Test_noneBody(t *testing.T) {
 	assert.ErrorContain(t, "expected empty body", err)
 }
 
-func Test_noneBody_Body(t *testing.T) {
+func Test_bodyNone_Body(t *testing.T) {
 	// --- Given ---
 	bdy := bodyNone{}
 
@@ -27,7 +27,7 @@ func Test_noneBody_Body(t *testing.T) {
 	assert.Nil(t, have)
 }
 
-func Test_noneBody_Assert(t *testing.T) {
+func Test_bodyNone_Assert(t *testing.T) {
 	t.Run("pass", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
@@ -64,7 +64,7 @@ func Test_noneBody_Assert(t *testing.T) {
 	})
 }
 
-func Test_noneBody_SetContentTypeHeader(t *testing.T) {
+func Test_bodyNone_SetContentTypeHeader(t *testing.T) {
 	// --- Given ---
 	bdy := bodyNone{}
 	h := http.Header{}

@@ -100,7 +100,7 @@ func Test_NewExchange(t *testing.T) {
 		assert.Equal(t, "localhost", gld.Request.Host)
 	})
 
-	t.Run("read error", func(t *testing.T) {
+	t.Run("error - read", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -131,7 +131,7 @@ func Test_NewExchange(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("unmarshall error", func(t *testing.T) {
+	t.Run("error - unmarshal", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -149,7 +149,7 @@ func Test_NewExchange(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("request unknown body type", func(t *testing.T) {
+	t.Run("error - request unknown body type", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -166,7 +166,7 @@ func Test_NewExchange(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
-	t.Run("response no status", func(t *testing.T) {
+	t.Run("error - response no status", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -328,7 +328,7 @@ func Test_Exchange_Assert(t *testing.T) {
 		assert.Equal(t, "oops", iokit.ReadAllStr(t, res.Body))
 	})
 
-	t.Run("respects the client timeout", func(t *testing.T) {
+	t.Run("error - client timeout", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -383,14 +383,15 @@ func Test_Exchange_Assert(t *testing.T) {
 		assert.Equal(t, http.NoBody, res.Body)
 	})
 
-	t.Run("connection refused", func(t *testing.T) {
+	t.Run("error - connection refused", func(t *testing.T) {
 		// --- Given ---
 		port := must.Value(netkit.GetFreePort())
 		assert.NoError(t, netkit.ReservePort(port))
 
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		wMsg := "Post \"http://127.0.0.1:%d/some/path?key0=val0&key1=val1\": " +
+		wMsg := "" +
+			"Post \"http://127.0.0.1:%d/some/path?key0=val0&key1=val1\": " +
 			"dial tcp 127.0.0.1:%d: connect: connection refused"
 		tspy.ExpectLogEqual(wMsg, port, port)
 		tspy.Close()

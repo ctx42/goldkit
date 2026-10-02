@@ -19,7 +19,7 @@ func Test_textBody(t *testing.T) {
 	assert.Equal(t, data, bdy.body)
 }
 
-func Test_textBody_Body(t *testing.T) {
+func Test_bodyText_Body(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		// --- Given ---
 		bdy := textBody("abc")
@@ -45,7 +45,7 @@ func Test_textBody_Body(t *testing.T) {
 	})
 }
 
-func Test_textBody_Assert(t *testing.T) {
+func Test_bodyText_Assert(t *testing.T) {
 	t.Run("pass", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
@@ -82,7 +82,7 @@ func Test_textBody_Assert(t *testing.T) {
 	})
 }
 
-func Test_textBody_SetContentTypeHeader(t *testing.T) {
+func Test_bodyText_SetContentTypeHeader(t *testing.T) {
 	// --- Given ---
 	bdy := textBody("abc")
 	h := http.Header{
