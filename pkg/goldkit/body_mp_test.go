@@ -265,6 +265,18 @@ func Test_mpBody_parse(t *testing.T) {
 		wMsg := "add multipart file \"dir\": read testdata: is a directory"
 		assert.ErrorEqual(t, wMsg, err)
 	})
+
+	t.Run("error - no files or values", func(t *testing.T) {
+		// --- Given ---
+		bdy := newMpBody("testdata")
+		bdy.Values = map[string][]string{"field": {}}
+
+		// --- When ---
+		err := bdy.parse()
+
+		// --- Then ---
+		assert.ErrorEqual(t, "multipart body has no files or values", err)
+	})
 }
 
 func Test_mpBody_Body(t *testing.T) {
@@ -577,6 +589,103 @@ func Test_mpBody_Assert(t *testing.T) {
 
 		// --- When ---
 		have := bdy0.Assert(tspy, bdy1.Body())
+
+		// --- Then ---
+		assert.False(t, have)
+	})
+
+	t.Run("files sharing a field", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.Close()
+
+		bdy0 := newMpBody("testdata")
+		bdy0.Files = []*mpFile{
+			{"docs", "a.txt", "content0.txt"},
+			{"docs", "b.txt", "content1.txt"},
+		}
+		assert.NoError(t, bdy0.setBoundary("boundary0"))
+		assert.NoError(t, bdy0.parse())
+
+		bdy1 := newMpBody("testdata")
+		bdy1.Files = []*mpFile{
+			{"docs", "a.txt", "content0.txt"},
+			{"docs", "b.txt", "content1.txt"},
+		}
+		assert.NoError(t, bdy1.setBoundary("boundary1"))
+		assert.NoError(t, bdy1.parse())
+
+		body := bdy1.Body()
+
+		// --- When ---
+		have := bdy0.Assert(tspy, body)
+
+		// --- Then ---
+		assert.True(t, have)
+	})
+
+	t.Run("extra file under a shared field", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		wMsg := "" +
+			"expected form to have the same number of files:\n" +
+			"  want: 1\n" +
+			"  have: 2"
+		tspy.ExpectLogEqual(wMsg)
+		tspy.Close()
+
+		bdy0 := newMpBody("testdata")
+		bdy0.Files = []*mpFile{{"docs", "a.txt", "content0.txt"}}
+		assert.NoError(t, bdy0.setBoundary("boundary0"))
+		assert.NoError(t, bdy0.parse())
+
+		bdy1 := newMpBody("testdata")
+		bdy1.Files = []*mpFile{
+			{"docs", "a.txt", "content0.txt"},
+			{"docs", "b.txt", "content1.txt"},
+		}
+		assert.NoError(t, bdy1.setBoundary("boundary1"))
+		assert.NoError(t, bdy1.parse())
+
+		body := bdy1.Body()
+
+		// --- When ---
+		have := bdy0.Assert(tspy, body)
+
+		// --- Then ---
+		assert.False(t, have)
+	})
+
+	t.Run("missing file under a shared field", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		wMsg := "" +
+			"expected the file field to have the number of files:\n" +
+			"  field: docs\n" +
+			"   want: 2\n" +
+			"   have: 1"
+		tspy.ExpectLogEqual(wMsg)
+		tspy.Close()
+
+		bdy0 := newMpBody("testdata")
+		bdy0.Files = []*mpFile{
+			{"docs", "a.txt", "content0.txt"},
+			{"docs", "b.txt", "content1.txt"},
+		}
+		assert.NoError(t, bdy0.setBoundary("boundary0"))
+		assert.NoError(t, bdy0.parse())
+
+		bdy1 := newMpBody("testdata")
+		bdy1.Files = []*mpFile{{"docs", "a.txt", "content0.txt"}}
+		assert.NoError(t, bdy1.setBoundary("boundary1"))
+		assert.NoError(t, bdy1.parse())
+
+		body := bdy1.Body()
+
+		// --- When ---
+		have := bdy0.Assert(tspy, body)
 
 		// --- Then ---
 		assert.False(t, have)

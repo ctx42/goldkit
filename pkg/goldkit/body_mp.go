@@ -2,8 +2,10 @@ package goldkit
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -90,6 +92,10 @@ func (bdy *mpBody) parse() error {
 		}
 		_ = f.Close()
 	}
+	// An empty multipart body cannot be parsed, so no body could match it.
+	if bdy.mp.body.Len() == 0 {
+		return errors.New("multipart body has no files or values")
+	}
 	if err := bdy.mp.Close(); err != nil {
 		return fmt.Errorf("close multipart body: %w", err)
 	}
@@ -138,11 +144,24 @@ func (bdy *mpBody) assert(have []byte) error {
 		return notice.From(err, "MultipartForm.Value")
 	}
 
+	// Files sharing a field are matched in order, so track the next index
+	// of each field.
+	next := make(map[string]int, len(wantFiles))
 	for _, fil := range bdy.Files {
-		_, mh, err := haveReq.FormFile(fil.Field)
-		if err != nil {
-			return err
+		haves := haveFiles[fil.Field]
+		if len(haves) == 0 {
+			return http.ErrMissingFile
 		}
+		idx := next[fil.Field]
+		next[fil.Field]++
+		if idx >= len(haves) {
+			msg := "expected the file field to have the number of files"
+			return notice.New(msg).
+				Append("field", "%s", fil.Field).
+				Want("%d", len(wantFiles[fil.Field])).
+				Have("%d", len(haves))
+		}
+		mh := haves[idx]
 		if fil.Name != mh.Filename {
 			return notice.New("expected the file field to have the filename").
 				Append("field", "%s", fil.Field).
@@ -186,8 +205,8 @@ func (bdy *mpBody) assert(have []byte) error {
 		}
 	}
 
-	wantLen := len(wantFiles)
-	haveLen := len(haveFiles)
+	wantLen := countFiles(wantFiles)
+	haveLen := countFiles(haveFiles)
 	if wantLen != haveLen {
 		return notice.New("expected form to have the same number of files").
 			Want("%d", wantLen).
@@ -199,4 +218,13 @@ func (bdy *mpBody) assert(have []byte) error {
 
 func (bdy *mpBody) SetContentTypeHeader(h http.Header) {
 	bdy.mp.SetContentTypeHeader(h)
+}
+
+// countFiles returns the number of files in all fields of a multipart form.
+func countFiles(files map[string][]*multipart.FileHeader) int {
+	var cnt int
+	for _, fhs := range files {
+		cnt += len(fhs)
+	}
+	return cnt
 }
