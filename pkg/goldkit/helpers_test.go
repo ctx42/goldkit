@@ -2,6 +2,7 @@ package goldkit
 
 import (
 	"io"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -219,7 +220,20 @@ func Test_cloneReader(t *testing.T) {
 
 		// --- Then ---
 		assert.Nil(t, buf)
-		assert.Nil(t, got)
+		assert.Equal(t, http.NoBody, got)
+	})
+
+	t.Run("nil reader", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.Close()
+
+		// --- When ---
+		buf, have := cloneReader(tspy, nil)
+
+		// --- Then ---
+		assert.Nil(t, buf)
+		assert.Equal(t, http.NoBody, have)
 	})
 }
 

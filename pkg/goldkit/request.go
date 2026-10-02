@@ -3,7 +3,6 @@ package goldkit
 import (
 	"bytes"
 	"errors"
-	"io"
 	"maps"
 	"net/http"
 	"net/http/httptest"
@@ -61,7 +60,7 @@ type Request struct {
 func NewRequest(t tester.T, src Source) *Request {
 	t.Helper()
 
-	data, err := io.ReadAll(src)
+	data, err := readSource(src)
 	if err != nil {
 		t.Error(err)
 		return nil

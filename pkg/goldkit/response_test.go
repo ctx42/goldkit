@@ -127,6 +127,20 @@ func Test_NewResponse(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
+	t.Run("error - nil source reader", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogEqual(errNilReader.Error())
+		tspy.Close()
+
+		// --- When ---
+		gld := NewResponse(tspy, Source{})
+
+		// --- Then ---
+		assert.Nil(t, gld)
+	})
+
 	t.Run("invalid YAML", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
@@ -343,6 +357,27 @@ func Test_Response_Assert(t *testing.T) {
 
 		// --- Then ---
 		assert.True(t, have)
+	})
+
+	t.Run("nil body", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.Close()
+
+		src := must.Value(SourceFrom("testdata/response_minimal.yml", nil))
+		gld := NewResponse(tspy, src)
+
+		rsp := &http.Response{
+			StatusCode: http.StatusCreated,
+			Header:     http.Header{},
+		}
+
+		// --- When ---
+		have := gld.Assert(rsp)
+
+		// --- Then ---
+		assert.True(t, have)
+		assert.Equal(t, http.NoBody, rsp.Body)
 	})
 
 	t.Run("body does not match", func(t *testing.T) {

@@ -29,7 +29,7 @@ type Exchange struct {
 // NewExchange returns a new instance of HTTP request / response [Exchange].
 func NewExchange(t tester.T, src Source) *Exchange {
 	t.Helper()
-	data, err := io.ReadAll(src)
+	data, err := readSource(src)
 	if err != nil {
 		t.Error(err)
 		return nil

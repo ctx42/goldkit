@@ -18,6 +18,10 @@ import (
 // ErrInvBodyType represents an unsupported request body type error.
 var ErrInvBodyType = errors.New("invalid body type")
 
+// errNilReader is returned when a golden file [Source] has no reader, for
+// example, the zero [Source] returned by a failed [Open].
+var errNilReader = errors.New("golden file source has no reader")
+
 // parseBody takes a path to a golden file, its body node and its type and
 // parses it. Returns YAML parsing error or [ErrInvBodyType] if typ is unknown.
 func parseBody(pth string, body yaml.Node, typ string) (Body, error) {
@@ -46,17 +50,32 @@ func parseBody(pth string, body yaml.Node, typ string) (Body, error) {
 	}
 }
 
+// readSource reads all bytes from the source reader. Returns errNilReader when
+// the source has no reader.
+func readSource(src Source) ([]byte, error) {
+	if src.Reader == nil {
+		return nil, errNilReader
+	}
+	return io.ReadAll(src)
+}
+
 // cloneReader reads all bytes from rc and returns it as a slice and
 // [io.ReadCloser] with the same data, so it can be used, for example, to
-// "reset" body of a [http.Request] or [http.Response] instance.
+// "reset" body of a [http.Request] or [http.Response] instance. A nil rc is
+// treated as an empty body. On a read error, it marks the test as failed and
+// returns [http.NoBody], so the returned reader is never nil.
 func cloneReader(t tester.T, rc io.ReadCloser) ([]byte, io.ReadCloser) {
 	t.Helper()
+	if rc == nil {
+		return nil, http.NoBody
+	}
 	buf := &bytes.Buffer{}
 	tee := io.TeeReader(rc, buf)
 	data, err := io.ReadAll(tee)
 	if err != nil {
+		_ = rc.Close()
 		t.Error(err)
-		return nil, nil
+		return nil, http.NoBody
 	}
 	_ = rc.Close()
 	return data, io.NopCloser(buf)

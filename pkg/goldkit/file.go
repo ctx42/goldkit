@@ -19,7 +19,7 @@ type File struct {
 func New(t tester.T, src Source) *File {
 	t.Helper()
 
-	data, err := io.ReadAll(src)
+	data, err := readSource(src)
 	if err != nil {
 		t.Error(err)
 		return nil
@@ -45,9 +45,17 @@ func New(t tester.T, src Source) *File {
 
 // Create is a convenience function for:
 //
-//	gld := goldkit.Create(t, "golden.yml", data)
+//	gld := goldkit.New(goldkit.Open(t, "golden.yml", data))
+//
+// On error, it marks the test as failed and returns nil.
 func Create(t tester.T, pth string, data any, opts ...Option) *File {
-	return New(Open(t, pth, data, opts...))
+	t.Helper()
+	src, err := SourceFrom(pth, data, opts...)
+	if err != nil {
+		t.Error(err)
+		return nil
+	}
+	return New(t, src)
 }
 
 // Body returns the file's body as a byte slice.

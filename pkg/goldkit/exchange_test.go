@@ -117,6 +117,20 @@ func Test_NewExchange(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
+	t.Run("error - nil source reader", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogEqual(errNilReader.Error())
+		tspy.Close()
+
+		// --- When ---
+		gld := NewExchange(tspy, Source{})
+
+		// --- Then ---
+		assert.Nil(t, gld)
+	})
+
 	t.Run("unmarshall error", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
@@ -291,6 +305,29 @@ func Test_Exchange_Assert(t *testing.T) {
 		assert.NoError(t, res.Body.Close())
 	})
 
+	t.Run("status code mismatch keeps body readable", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("expected response status code to be equal")
+		tspy.Close()
+
+		srv := httpkit.NewServer(t)
+		srv.Rsp(http.StatusInternalServerError, []byte("oops"))
+
+		u := must.Value(url.Parse(srv.URL()))
+		data := Meta{}.MetaSet("host", u.Host)
+		src := must.Value(SourceFrom("testdata/exchange.yml", data))
+		gld := NewExchange(tspy, src)
+
+		// --- When ---
+		_, res := gld.Assert()
+
+		// --- Then ---
+		assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+		assert.Equal(t, "oops", iokit.ReadAllStr(t, res.Body))
+	})
+
 	t.Run("respects the client timeout", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
@@ -316,6 +353,34 @@ func Test_Exchange_Assert(t *testing.T) {
 		// --- Then ---
 		assert.NotNil(t, req)
 		assert.Nil(t, res)
+	})
+
+	t.Run("error - response body read", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		srv := httptest.NewServer(http.HandlerFunc(
+			func(w http.ResponseWriter, _ *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.Header().Set("Content-Length", "100")
+				_, _ = w.Write([]byte(`{"success"`))
+			},
+		))
+		t.Cleanup(srv.Close)
+
+		u := must.Value(url.Parse(srv.URL))
+		data := Meta{}.MetaSet("host", u.Host)
+		src := must.Value(SourceFrom("testdata/exchange.yml", data))
+		gld := NewExchange(tspy, src)
+
+		// --- When ---
+		_, res := gld.Assert()
+
+		// --- Then ---
+		assert.Equal(t, http.NoBody, res.Body)
 	})
 
 	t.Run("connection refused", func(t *testing.T) {

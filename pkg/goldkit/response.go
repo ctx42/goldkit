@@ -48,7 +48,7 @@ type Response struct {
 func NewResponse(t tester.T, src Source) *Response {
 	t.Helper()
 
-	data, err := io.ReadAll(src)
+	data, err := readSource(src)
 	if err != nil {
 		t.Error(err)
 		return nil
@@ -113,6 +113,10 @@ func (rsp *Response) Body() []byte {
 func (rsp *Response) Assert(have *http.Response) bool {
 	rsp.t.Helper()
 
+	// Clone the body first so it stays readable whichever check fails.
+	haveBody, rc := cloneReader(rsp.t, have.Body)
+	defer func() { have.Body = rc }()
+
 	if rsp.StatusCode != have.StatusCode {
 		msg := notice.New("expected response status code to be equal").
 			Want("%d", rsp.StatusCode).
@@ -125,8 +129,6 @@ func (rsp *Response) Assert(have *http.Response) bool {
 		return false
 	}
 
-	haveBody, rc := cloneReader(rsp.t, have.Body)
-	defer func() { have.Body = rc }()
 	return rsp.body.Assert(rsp.t, haveBody)
 }
 

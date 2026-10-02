@@ -69,6 +69,20 @@ func Test_New(t *testing.T) {
 		assert.Nil(t, gld)
 	})
 
+	t.Run("error - nil source reader", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogEqual(errNilReader.Error())
+		tspy.Close()
+
+		// --- When ---
+		gld := New(tspy, Source{})
+
+		// --- Then ---
+		assert.Nil(t, gld)
+	})
+
 	t.Run("invalid YAML file", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
@@ -155,6 +169,20 @@ func Test_Create(t *testing.T) {
 			"key4": time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
 		}
 		assert.Equal(t, wantMeta, gld.Meta)
+	})
+
+	t.Run("error - missing golden file", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("not_existing.yml: no such file or directory")
+		tspy.Close()
+
+		// --- When ---
+		gld := Create(tspy, "testdata/not_existing.yml", nil)
+
+		// --- Then ---
+		assert.Nil(t, gld)
 	})
 }
 
