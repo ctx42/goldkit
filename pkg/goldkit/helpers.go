@@ -46,7 +46,7 @@ func parseBody(pth string, body yaml.Node, typ string) (Body, error) {
 		return noneBody(body.Value)
 
 	default:
-		return nil, ErrInvBodyType
+		return nil, fmt.Errorf("%w: %q", ErrInvBodyType, typ)
 	}
 }
 
@@ -90,7 +90,7 @@ func lines2Headers(lines ...string) (http.Header, error) {
 	tp := textproto.NewReader(bufio.NewReader(rdr))
 	hs, err := tp.ReadMIMEHeader()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse headers: %w", err)
 	}
 	return http.Header(hs), nil
 }

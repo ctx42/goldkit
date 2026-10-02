@@ -121,7 +121,7 @@ func (bdy *mpBody) Assert(t tester.T, have []byte) bool {
 func (bdy *mpBody) assert(have []byte) error {
 	wantReq, err := bdy.mp.Request(http.MethodPost, "/")
 	if err != nil {
-		return err
+		return fmt.Errorf("build golden multipart body: %w", err)
 	}
 	defer func() { _ = wantReq.MultipartForm.RemoveAll() }()
 	wantValMap := wantReq.MultipartForm.Value
@@ -134,7 +134,7 @@ func (bdy *mpBody) assert(have []byte) error {
 	haveReq := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(have))
 	haveReq.Header.Set("Content-Type", "multipart/form-data; boundary="+boundary)
 	if err = haveReq.ParseMultipartForm(10e6); err != nil {
-		return err
+		return fmt.Errorf("parse multipart body: %w", err)
 	}
 	defer func() { _ = haveReq.MultipartForm.RemoveAll() }()
 	haveValMap := haveReq.MultipartForm.Value
@@ -150,7 +150,7 @@ func (bdy *mpBody) assert(have []byte) error {
 	for _, fil := range bdy.Files {
 		haves := haveFiles[fil.Field]
 		if len(haves) == 0 {
-			return http.ErrMissingFile
+			return fmt.Errorf("file field %q: %w", fil.Field, http.ErrMissingFile)
 		}
 		idx := next[fil.Field]
 		next[fil.Field]++
@@ -176,12 +176,12 @@ func (bdy *mpBody) assert(have []byte) error {
 
 		haveFil, err := mh.Open()
 		if err != nil {
-			return err
+			return fmt.Errorf("open multipart file %q: %w", mh.Filename, err)
 		}
 		haveContent, err := io.ReadAll(haveFil)
 		_ = haveFil.Close()
 		if err != nil {
-			return err
+			return fmt.Errorf("read multipart file %q: %w", mh.Filename, err)
 		}
 
 		wantLen := len(wantContent)

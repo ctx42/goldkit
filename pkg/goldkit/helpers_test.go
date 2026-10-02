@@ -271,8 +271,8 @@ func Test_lines2Headers(t *testing.T) {
 		hs, err := lines2Headers("abc")
 
 		// --- Then ---
-		wMsg := "malformed MIME header: missing colon: \"abc\""
-		assert.ErrorContain(t, wMsg, err)
+		wMsg := "parse headers: malformed MIME header: missing colon: \"abc\""
+		assert.ErrorEqual(t, wMsg, err)
 		assert.Len(t, 0, hs)
 	})
 }

@@ -786,7 +786,9 @@ func Test_mpBody_Assert(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		wMsg := "malformed MIME header: missing colon: \"NotAHeaderLine\""
+		wMsg := "" +
+			"parse multipart body: " +
+			"malformed MIME header: missing colon: \"NotAHeaderLine\""
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
@@ -812,7 +814,7 @@ func Test_mpBody_Assert(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogEqual("http: no such file")
+		tspy.ExpectLogEqual("file field \"file\": http: no such file")
 		tspy.Close()
 
 		bdy0 := newMpBody("testdata")

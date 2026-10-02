@@ -150,7 +150,7 @@ func Test_NewExchange(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogEqual(ErrInvBodyType.Error())
+		tspy.ExpectLogEqual("invalid body type: \"unsupported\"")
 		tspy.Close()
 
 		pth := "testdata/exchange_req_inv_body_type.yml"

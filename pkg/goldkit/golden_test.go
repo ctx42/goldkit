@@ -93,7 +93,9 @@ func Test_SourceFrom(t *testing.T) {
 		src, err := SourceFrom("testdata/golden_invalid.tpl.yml", data)
 
 		// --- Then ---
-		wMsg := "template: golden:2: unexpected \"}\" in operand"
+		wMsg := "" +
+			"template: golden_invalid.tpl.yml:2: " +
+			"unexpected \"}\" in operand"
 		assert.ErrorEqual(t, wMsg, err)
 		assert.Zero(t, src)
 	})
@@ -107,8 +109,8 @@ func Test_SourceFrom(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "template: " +
-			"golden:2:11: " +
-			"executing \"golden\" at <{{.key1}}>: " +
+			"golden.tpl.yml:2:11: " +
+			"executing \"golden.tpl.yml\" at <{{.key1}}>: " +
 			"can't print {{.key1}} of type func()"
 		assert.ErrorEqual(t, wMsg, err)
 		assert.Zero(t, src)
@@ -183,7 +185,9 @@ func Test_Open(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		wMsg := "template: golden:2: unexpected \"}\" in operand"
+		wMsg := "" +
+			"template: golden_invalid.tpl.yml:2: " +
+			"unexpected \"}\" in operand"
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 

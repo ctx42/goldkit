@@ -98,7 +98,7 @@ func SourceFrom(pth string, data any, opts ...Option) (Source, error) {
 		return Source{Reader: bytes.NewReader(content), Path: pth}, nil
 	}
 
-	tpl := template.New("golden")
+	tpl := template.New(filepath.Base(pth))
 	for _, opt := range opts {
 		tpl = opt(tpl)
 	}

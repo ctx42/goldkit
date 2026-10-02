@@ -234,7 +234,7 @@ func Test_NewRequest(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogEqual(ErrInvBodyType.Error())
+		tspy.ExpectLogEqual("invalid body type: \"unsupported\"")
 		tspy.Close()
 
 		src := must.Value(SourceFrom("testdata/request_inv_body_type.yml", nil))
