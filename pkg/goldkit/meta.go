@@ -227,22 +227,28 @@ func (met Meta) MetaGetTime(key string) (time.Time, error) {
 }
 
 // MetaGetTimeIn checks if the specified key exists in the map, and it is of
-// [time.Time] type or string representing time in "2006-01-02T15:04:05" format.
-// If the key is missing, it returns zero value time and error having
-// [ErrMissing] in its chain. If the key exists but its value is not of the
-// expected type, it returns zero value time and error having [ErrType] in its
-// chain. If the key is a string, but it is not [time.RFC3339] or special case
-// of zero value time as a string, it returns zero value time and error having
-// [ErrFormat] in its chain. Otherwise, it returns the [time.Time] value of the
-// key in a given timezone and a nil error.
+// [time.Time] type or string representing time in [time.RFC3339] or
+// "2006-01-02T15:04:05" format. A [time.Time] value and an [time.RFC3339]
+// string are converted to the given timezone; a string without timezone
+// information is interpreted in it. If tz is nil, it returns zero value time
+// and error having [ErrValue] in its chain. If the key is missing, it returns
+// zero value time and error having [ErrMissing] in its chain. If the key
+// exists but its value is not of the expected type, it returns zero value time
+// and error having [ErrType] in its chain. If the key is a string in neither
+// format, it returns zero value time and error having [ErrFormat] in its
+// chain. Otherwise, it returns the [time.Time] value of the key in the given
+// timezone and a nil error.
 //
 // The special case of "0000-00-00T00:00:00" is also handled for which the
 // zero-value time is returned and nil error.
 func (met Meta) MetaGetTimeIn(key string, tz *time.Location) (time.Time, error) {
+	if tz == nil {
+		return time.Time{}, fmt.Errorf("%w: %#q: nil location", ErrValue, key)
+	}
 	if val, ok := met[key]; ok {
 		switch v := val.(type) {
 		case time.Time:
-			return v, nil
+			return v.In(tz), nil
 		case string:
 			// Zero value time.
 			if v == "0000-00-00T00:00:00" {

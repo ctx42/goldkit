@@ -503,6 +503,19 @@ func Test_Meta_MetaGetTimeIn(t *testing.T) {
 		assert.ErrorContain(t, "`key`", err)
 		assert.Zero(t, have)
 	})
+
+	t.Run("error - nil location", func(t *testing.T) {
+		// --- Given ---
+		m := map[string]any{"key": "2000-01-02T03:04:05"}
+
+		// --- When ---
+		have, err := Meta(m).MetaGetTimeIn("key", nil)
+
+		// --- Then ---
+		assert.ErrorIs(t, ErrValue, err)
+		assert.ErrorContain(t, "nil location", err)
+		assert.Zero(t, have)
+	})
 }
 
 func Test_Meta_MetaGetTimeIn_tabular(t *testing.T) {
@@ -517,6 +530,7 @@ func Test_Meta_MetaGetTimeIn_tabular(t *testing.T) {
 		want time.Time
 	}{
 		{"time UTC", map[string]any{"key": tim0}, time.UTC, tim0},
+		{"time UTC to WAW", map[string]any{"key": tim0}, waw, tim0.In(waw)},
 		{
 			"string time UTC",
 			map[string]any{"key": "2000-01-02T03:04:05"},
