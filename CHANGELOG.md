@@ -1,3 +1,6 @@
+## v0.20.1 (Sat, 10 Oct 2026 19:16:11 UTC)
+- build(deps): update testing to v0.57.0 and testkit to v0.16.1.
+
 ## v0.20.0 (Fri, 02 Oct 2026 19:16:28 UTC)
 - doc: add logo.
 - build(deps): bump ctx42/testing to v0.56.0 and testkit to v0.15.0.
