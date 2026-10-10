@@ -1,3 +1,6 @@
+## v0.20.2 (Sat, 10 Oct 2026 19:22:07 UTC)
+- build(deps): update 2 ctx42 dependencies.
+
 ## v0.20.1 (Sat, 10 Oct 2026 19:16:11 UTC)
 - build(deps): update testing to v0.57.0 and testkit to v0.16.1.
 
