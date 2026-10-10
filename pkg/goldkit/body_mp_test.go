@@ -452,7 +452,7 @@ func Test_mpBody_Assert(t *testing.T) {
 			"              \"field\": {\n" +
 			"                \"value\",\n" +
 			"              },\n" +
-			"              \"other\": []string{\n" +
+			"              \"other\": {\n" +
 			"                \"value\",\n" +
 			"              },\n" +
 			"            }\n" +
@@ -462,7 +462,7 @@ func Test_mpBody_Assert(t *testing.T) {
 			"            -  \"field\": {\n" +
 			"            -    \"value\",\n" +
 			"            -  },\n" +
-			"            -  \"other\": []string{\n" +
+			"            -  \"other\": {\n" +
 			"            +  \"field\": {\n" +
 			"                 \"value\",\n" +
 			"               },"
